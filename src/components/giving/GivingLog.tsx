@@ -9,11 +9,9 @@ function fmt(n: number) {
 interface GivingLogProps {
   donations: Donation[]
   ytdTotal: number
-  allocationPct: number
-  grossIncome: number
 }
 
-export function GivingLog({ donations, ytdTotal, allocationPct, grossIncome }: GivingLogProps) {
+export function GivingLog({ donations, ytdTotal }: GivingLogProps) {
   const receiptCount = donations.filter((d) => d.receiptName).length
 
   return (
@@ -55,9 +53,6 @@ export function GivingLog({ donations, ytdTotal, allocationPct, grossIncome }: G
               <Typography variant="label" as="span">YTD Total</Typography>
               <Typography variant="amount" as="span">{fmt(ytdTotal)}</Typography>
             </div>
-            {grossIncome > 0 && (
-              <Typography variant="small">{allocationPct.toFixed(1)}% of gross income</Typography>
-            )}
             <Separator className="my-2" />
             <Typography variant="caption">For your accountant</Typography>
             <Typography variant="small">

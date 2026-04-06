@@ -1,6 +1,5 @@
 import type { AllocationRates, HomeOfficeExpenses, MonthlyReimbursement, PaymentAllocation, PhoneInternetExpenses, RunwayInputs } from '@/types'
 
-export const MONTHLY_FLOOR = 4250
 export const DEFAULT_TAX_RATE = 0.30
 export const DEFAULT_SEP_RATE = 0.15
 export const DEFAULT_GIVING_RATE = 0.10

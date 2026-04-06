@@ -12,7 +12,18 @@ import type { Quarter as QuarterType } from '@/types'
 const quarters = ['Q1', 'Q2', 'Q3', 'Q4'] as const
 
 export function Quarter() {
-  const { quarterData, setQuarter, businessCashBalance, personalCashBalance, totalCash, setCash } = useRunway()
+  const {
+    quarterData,
+    setQuarter,
+    businessCashBalance,
+    personalCashBalance,
+    totalCash,
+    setCash,
+    monthlyFloor,
+    setMonthlyFloor,
+    pipelineRemaining,
+    setPipelineRemaining,
+  } = useRunway()
   const { totalGoalsPerQ } = useGoals()
   const { rates } = useAllocations()
 
@@ -31,32 +42,34 @@ export function Quarter() {
         personalCashBalance={personalCashBalance}
         totalCash={totalCash}
         onChange={(field, value) => setCash({ [field]: value })}
+        monthlyFloor={monthlyFloor}
+        onMonthlyFloorChange={setMonthlyFloor}
+        pipelineRemaining={pipelineRemaining}
+        onPipelineChange={setPipelineRemaining}
       />
 
       <Card title="This Quarter">
-        <div className="flex gap-4">
-          <Field>
-            <Label>Quarter</Label>
-            <Select
-              value={quarterData.quarter}
-              onValueChange={(val) => setQuarter({ quarter: val as QuarterType })}
-              options={[...quarters]}
-              className="w-24"
-            />
-          </Field>
-          <Field>
-            <Label htmlFor="year">Year</Label>
-            <Input
-              id="year"
-              type="number"
-              className="w-24"
-              value={quarterData.year || ''}
-              onChange={(e) =>
-                setQuarter({ year: Number(e.target.value) || new Date().getFullYear() })
-              }
-            />
-          </Field>
-        </div>
+        <Field>
+          <Label>Quarter</Label>
+          <Select
+            value={quarterData.quarter}
+            onValueChange={(val) => setQuarter({ quarter: val as QuarterType })}
+            options={[...quarters]}
+            className="w-24"
+          />
+        </Field>
+        <Field>
+          <Label htmlFor="year">Year</Label>
+          <Input
+            id="year"
+            type="number"
+            className="w-24"
+            value={quarterData.year || ''}
+            onChange={(e) =>
+              setQuarter({ year: Number(e.target.value) || new Date().getFullYear() })
+            }
+          />
+        </Field>
 
         <Field>
           <Label htmlFor="income">Income Received This Quarter</Label>
@@ -70,6 +83,9 @@ export function Quarter() {
             }
           />
         </Field>
+        <p className="text-sm text-muted-foreground">
+          Update Remaining Pipeline on the Runway tab when this payment lands.
+        </p>
       </Card>
 
       <QuarterSummary income={income} breakdown={breakdown} />

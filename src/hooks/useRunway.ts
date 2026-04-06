@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { Quarter } from '@/types'
 import {
-  MONTHLY_FLOOR,
   calcDeployablePool,
   calcRunwayMonths,
   calcSafePerQuarter,
@@ -19,6 +18,8 @@ const quartersRemaining = Math.max(1, 4 - currentQuarterIndex)
 interface CashState {
   businessCashBalance: number
   personalCashBalance: number
+  monthlyFloor: number
+  pipelineRemaining: number
 }
 
 interface QuarterState {
@@ -30,9 +31,17 @@ interface QuarterState {
 function loadCash(): CashState {
   try {
     const stored = localStorage.getItem(CASH_KEY)
-    if (stored) return JSON.parse(stored) as CashState
+    if (stored) {
+      const parsed = JSON.parse(stored) as CashState
+      return {
+        businessCashBalance: parsed.businessCashBalance ?? 0,
+        personalCashBalance: parsed.personalCashBalance ?? 0,
+        monthlyFloor: parsed.monthlyFloor ?? 4250,
+        pipelineRemaining: parsed.pipelineRemaining ?? 0,
+      }
+    }
   } catch { /* ignore */ }
-  return { businessCashBalance: 0, personalCashBalance: 0 }
+  return { businessCashBalance: 0, personalCashBalance: 0, monthlyFloor: 4250, pipelineRemaining: 0 }
 }
 
 function loadQuarter(): QuarterState {
@@ -67,19 +76,23 @@ export function useRunway() {
   const deployablePool = calcDeployablePool(
     {
       businessCashBalance: totalCash,
-      pipelineRemaining: 0,
+      pipelineRemaining: cash.pipelineRemaining,
       quartersRemaining,
       bufferMonths: 3,
     },
-    MONTHLY_FLOOR
+    cash.monthlyFloor
   )
-  const runwayMonths = calcRunwayMonths(totalCash, MONTHLY_FLOOR)
+  const runwayMonths = calcRunwayMonths(totalCash, cash.monthlyFloor)
   const safePerQuarter = calcSafePerQuarter(deployablePool, quartersRemaining)
   const status = calcRunwayStatus(runwayMonths)
 
   return {
     businessCashBalance: cash.businessCashBalance,
     personalCashBalance: cash.personalCashBalance,
+    monthlyFloor: cash.monthlyFloor,
+    setMonthlyFloor: (v: number) => setCash({ monthlyFloor: v }),
+    pipelineRemaining: cash.pipelineRemaining,
+    setPipelineRemaining: (v: number) => setCash({ pipelineRemaining: v }),
     totalCash,
     setCash,
     quarterData,
@@ -88,8 +101,8 @@ export function useRunway() {
     runwayMonths,
     safePerQuarter,
     status,
-    buffer3mo: MONTHLY_FLOOR * 3,
-    buffer6mo: MONTHLY_FLOOR * 6,
+    buffer3mo: cash.monthlyFloor * 3,
+    buffer6mo: cash.monthlyFloor * 6,
     quartersRemaining,
   }
 }

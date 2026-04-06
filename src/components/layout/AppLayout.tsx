@@ -5,12 +5,12 @@ import { Button, Typography } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/journal', label: 'Journal', icon: BookOpen },
   { to: '/', label: 'Runway' },
   { to: '/quarter', label: 'Quarter' },
   { to: '/allocate', label: 'Allocate' },
   { to: '/goals', label: 'Goals' },
   { to: '/giving', label: 'Giving' },
+  { to: '/journal', label: 'Journal', icon: BookOpen },
   { to: '/reimbursements', label: 'Reimburse' },
 ]
 

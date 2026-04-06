@@ -5,7 +5,6 @@ import { StatGrid } from '@/components/shared/StatGrid'
 import { CashBalanceCards } from '@/components/runway/CashBalanceCards'
 import { RunwayStatus } from '@/components/runway/RunwayStatus'
 import { useRunway } from '@/hooks/useRunway'
-import { MONTHLY_FLOOR } from '@/lib/calculations'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -17,6 +16,10 @@ export function Runway() {
     personalCashBalance,
     totalCash,
     setCash,
+    monthlyFloor,
+    setMonthlyFloor,
+    pipelineRemaining,
+    setPipelineRemaining,
     deployablePool,
     runwayMonths,
     safePerQuarter,
@@ -39,13 +42,17 @@ export function Runway() {
         personalCashBalance={personalCashBalance}
         totalCash={totalCash}
         onChange={(field, value) => setCash({ [field]: value })}
+        monthlyFloor={monthlyFloor}
+        onMonthlyFloorChange={setMonthlyFloor}
+        pipelineRemaining={pipelineRemaining}
+        onPipelineChange={setPipelineRemaining}
       />
 
       <StatGrid>
         <StatCard
           label="Runway"
           value={`${runwayMonths.toFixed(1)} mo`}
-          sub={`${fmt(MONTHLY_FLOOR)}/mo floor`}
+          sub={`${fmt(monthlyFloor)}/mo floor`}
           variant={statusVariant}
         />
         <StatCard
