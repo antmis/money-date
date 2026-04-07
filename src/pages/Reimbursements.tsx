@@ -1,18 +1,21 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { Button, Dialog, Field, Grid, Input, Label } from '@/components/ui'
-import { MonthSelector } from '@/components/reimbursements/MonthSelector'
-import { OfficeLocationSection } from '@/components/reimbursements/HomeOfficeSection'
-import { MileageSection } from '@/components/reimbursements/MileageSection'
-import { PhoneInternetSection } from '@/components/reimbursements/PhoneInternetSection'
-import { HealthInsuranceSection } from '@/components/reimbursements/HealthInsuranceSection'
-import { ReimbursementSummary } from '@/components/reimbursements/ReimbursementSummary'
-import { YearSummary } from '@/components/reimbursements/YearSummary'
-import { useReimbursements } from '@/hooks/useReimbursements'
-import { useOfficeTemplates, useHealthTemplate } from '@/hooks/useOfficeTemplates'
-import type { HealthInsuranceExpenses } from '@/types'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader } from '@/shared/components'
+import { Button, Dialog, Field, Grid, Input, Label } from '@/ui'
+import {
+  MonthSelector,
+  OfficeLocationSection,
+  MileageSection,
+  PhoneInternetSection,
+  HealthInsuranceSection,
+  ReimbursementSummary,
+  YearSummary,
+  useReimbursements,
+  useOfficeTemplates,
+  useHealthTemplate,
+} from '@/features/reimbursements'
+import type { HealthInsuranceExpenses } from '@/features/reimbursements'
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',

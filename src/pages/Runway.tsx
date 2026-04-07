@@ -1,10 +1,7 @@
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { StatCard } from '@/components/shared/StatCard'
-import { CashBalanceCards } from '@/components/runway/CashBalanceCards'
-import { Grid } from '@/components/ui'
-import { RunwayStatus } from '@/components/runway/RunwayStatus'
-import { useRunway } from '@/hooks/useRunway'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader, StatCard } from '@/shared/components'
+import { CashBalanceCards, RunwayStatus, useRunway } from '@/features/runway'
+import { Grid } from '@/ui'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -66,7 +63,7 @@ export function Runway() {
           sub="comfortable reserve"
         />
       </Grid>
-      
+
       <RunwayStatus status={status} months={runwayMonths} />
     </PageContainer>
   )

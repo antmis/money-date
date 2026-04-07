@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { GoalCard } from '@/components/goals/GoalsTracker'
-import { Button, Card, Grid, Input, Label, Separator, Typography, Field, ButtonGroup } from '@/components/ui'
-import { useGoals } from '@/hooks/useGoals'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader } from '@/shared/components'
+import { GoalCard, useGoals } from '@/features/goals'
+import { Button, Card, Grid, Input, Label, Separator, Typography, Field, ButtonGroup } from '@/ui'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)

@@ -1,9 +1,7 @@
 import { toast } from 'sonner'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { DonationForm } from '@/components/giving/DonationForm'
-import { GivingLog } from '@/components/giving/GivingLog'
-import { useGiving } from '@/hooks/useGiving'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader } from '@/shared/components'
+import { DonationForm, GivingLog, useGiving } from '@/features/giving'
 
 export function Giving() {
   const { donations, addDonation, ytdTotal } = useGiving()

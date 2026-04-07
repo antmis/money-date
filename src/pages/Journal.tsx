@@ -1,12 +1,8 @@
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { JournalProgress } from '@/components/journal/JournalProgress'
-import { JournalPrompt } from '@/components/journal/JournalPrompt'
-import { JournalNav } from '@/components/journal/JournalNav'
-import { JournalSummary } from '@/components/journal/JournalSummary'
-import { useJournal } from '@/hooks/useJournal'
-import { Typography } from '@/components/ui'
-import type { Quarter } from '@/types'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader } from '@/shared/components'
+import { JournalProgress, JournalPrompt, JournalNav, JournalSummary, useJournal } from '@/features/journal'
+import { Typography } from '@/ui'
+import type { Quarter } from '@/shared/types'
 
 const currentYear = new Date().getFullYear()
 const currentQuarterIndex = Math.floor(new Date().getMonth() / 3)

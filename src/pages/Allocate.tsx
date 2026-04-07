@@ -1,8 +1,7 @@
-import { PageContainer } from '@/components/layout/PageContainer'
-import { SectionHeader } from '@/components/shared/SectionHeader'
-import { AllocationSliders } from '@/components/allocate/AllocationSliders'
-import { useAllocations } from '@/hooks/useAllocations'
-import { useGoals } from '@/hooks/useGoals'
+import { PageContainer } from '@/shared/layout'
+import { SectionHeader } from '@/shared/components'
+import { AllocationSliders, useAllocations } from '@/features/allocate'
+import { useGoals } from '@/features/goals'
 
 export function Allocate() {
   const { totalGoalsPerQ } = useGoals()
