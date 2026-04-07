@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, ButtonGroup, Card, Dialog, Field, Grid, Input, Label, Progress, StatItem, Typography, XStack, YStack } from '@/ui'
+import { Button, ButtonGroup, Card, Dialog, Field, Grid, Input, Label, ListItem, Progress, Typography, XStack, YStack } from '@/ui'
 import { calcQuartersToGoal, calcProgressPct } from '../utils/calculations'
 import type { Goal } from '../types'
 import { Trash2 } from 'lucide-react'
@@ -90,9 +90,9 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
     <>
       <Card title={goal.name}>
         <Grid>
-          <StatItem label="Target" value={fmt(goal.targetAmount)} />
-          <StatItem label="Saved" value={fmt(goal.currentAmount)} />
-          <StatItem label="Per Quarter" value={fmt(goal.quarterlyContribution)} />
+          <ListItem title="Target" subTitle={fmt(goal.targetAmount)} />
+          <ListItem title="Saved" subTitle={fmt(goal.currentAmount)} />
+          <ListItem title="Per Quarter" subTitle={fmt(goal.quarterlyContribution)} />
         </Grid>
 
         <YStack gap={1}>

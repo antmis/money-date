@@ -1,5 +1,5 @@
 import { Pencil } from 'lucide-react'
-import { Card, Typography } from '@/ui'
+import { Card, Typography, Button, XStack, YStack } from '@/ui'
 import type { TypographyColor } from '@/ui'
 
 interface StatCardProps {
@@ -20,20 +20,23 @@ const colorMap: Record<NonNullable<StatCardProps['variant']>, TypographyColor> =
 export function StatCard({ label, value, sub, variant = 'default', onEdit }: StatCardProps) {
   return (
     <Card>
-      <div className="flex items-start justify-between">
-        <Typography variant="muted">{label}</Typography>
+      <XStack justify="between">
+        <YStack gap={1}>
+          <Typography variant="muted">{label}</Typography>
+          <Typography variant="display" color={colorMap[variant]}>{value}</Typography>
+          {sub && <Typography variant="small">{sub}</Typography>}
+        </YStack>
         {onEdit && (
-          <button
+          <Button
             onClick={onEdit}
-            className="p-1 -mt-1 -mr-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             aria-label={`Edit ${label}`}
+            size="icon-sm"
+            variant="secondary"
           >
-            <Pencil size={14} />
-          </button>
+            <Pencil />
+          </Button>
         )}
-      </div>
-      <Typography variant="value" color={colorMap[variant]}>{value}</Typography>
-      {sub && <Typography variant="small">{sub}</Typography>}
+      </XStack>
     </Card>
   )
 }

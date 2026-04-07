@@ -1,4 +1,4 @@
-import { Card, Field, Slider, Label, Separator, StatItem, Typography, YStack, XStack } from '@/ui'
+import { Card, Field, Slider, Label, Separator, Typography, YStack, XStack, ListItem } from '@/ui'
 import type { AllocationRates } from '../types'
 
 function fmt(n: number) {
@@ -45,7 +45,7 @@ export function AllocationSliders({ rates, onRatesChange, goalsAmount }: Allocat
         <Separator />
 
         <XStack justify="between" align="center">
-          <StatItem label="Set in Goals tab" value="Goals" />
+          <ListItem title="Set in Goals tab" subTitle="Goals" />
           <Typography variant="amount" color="goals">
             {fmt(goalsAmount)} / quarter
           </Typography>
