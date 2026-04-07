@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { StatCard } from '@/components/shared/StatCard'
 import { CashEditDialog } from '@/components/runway/CashEditDialog'
+import { Grid } from '@/components/ui'
 
 type CashField = 'businessCashBalance' | 'personalCashBalance'
-type EditableField = CashField | 'monthlyFloor' | 'pipelineRemaining'
+type EditableField = CashField | 'monthlyFloor' | 'monthlyPersonalExpenses'
 
 interface CashBalanceCardsProps {
   businessCashBalance: number
@@ -12,8 +13,9 @@ interface CashBalanceCardsProps {
   onChange: (field: CashField, value: number) => void
   monthlyFloor: number
   onMonthlyFloorChange: (v: number) => void
-  pipelineRemaining: number
-  onPipelineChange: (v: number) => void
+  monthlyPersonalExpenses: number
+  onMonthlyPersonalExpensesChange: (v: number) => void
+  totalMonthlyExpenses: number
 }
 
 function fmt(n: number) {
@@ -23,8 +25,8 @@ function fmt(n: number) {
 const fieldMeta: Record<EditableField, { title: string }> = {
   businessCashBalance: { title: 'Business Account' },
   personalCashBalance: { title: 'Personal Account' },
-  monthlyFloor: { title: 'Monthly Expenses' },
-  pipelineRemaining: { title: 'Remaining Pipeline' },
+  monthlyFloor: { title: 'Monthly Business Expenses' },
+  monthlyPersonalExpenses: { title: 'Monthly Personal Expenses' },
 }
 
 export function CashBalanceCards({
@@ -34,8 +36,9 @@ export function CashBalanceCards({
   onChange,
   monthlyFloor,
   onMonthlyFloorChange,
-  pipelineRemaining,
-  onPipelineChange,
+  monthlyPersonalExpenses,
+  onMonthlyPersonalExpensesChange,
+  totalMonthlyExpenses,
 }: CashBalanceCardsProps) {
   const [editingField, setEditingField] = useState<EditableField | null>(null)
 
@@ -43,19 +46,19 @@ export function CashBalanceCards({
     if (field === 'businessCashBalance') return businessCashBalance
     if (field === 'personalCashBalance') return personalCashBalance
     if (field === 'monthlyFloor') return monthlyFloor
-    return pipelineRemaining
+    return monthlyPersonalExpenses
   }
 
   function handleSave(val: number) {
     if (!editingField) return
     if (editingField === 'monthlyFloor') onMonthlyFloorChange(val)
-    else if (editingField === 'pipelineRemaining') onPipelineChange(val)
+    else if (editingField === 'monthlyPersonalExpenses') onMonthlyPersonalExpensesChange(val)
     else onChange(editingField, val)
   }
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <Grid>
         <StatCard
           label="Business Account"
           value={fmt(businessCashBalance)}
@@ -66,23 +69,27 @@ export function CashBalanceCards({
           value={fmt(personalCashBalance)}
           onEdit={() => setEditingField('personalCashBalance')}
         />
-        <StatCard  
-          label="Total Cash" 
-          value={fmt(totalCash)} 
-          sub="used for runway" 
+        <StatCard
+          label="Total Cash"
+          value={fmt(totalCash)}
+          sub="used for runway"
         />
         <StatCard
-          label="Monthly Expenses"
+          label="Monthly Business Expenses"
           value={fmt(monthlyFloor)}
           onEdit={() => setEditingField('monthlyFloor')}
         />
         <StatCard
-          label="Remaining Pipeline"
-          value={fmt(pipelineRemaining)}
-          sub="High confidence invoices only"
-          onEdit={() => setEditingField('pipelineRemaining')}
+          label="Monthly Personal Expenses"
+          value={fmt(monthlyPersonalExpenses)}
+          onEdit={() => setEditingField('monthlyPersonalExpenses')}
         />
-      </div>
+        <StatCard
+          label="Total Expenses"
+          value={fmt(totalMonthlyExpenses)}
+          sub="business + personal"
+        />
+      </Grid>
 
       <CashEditDialog
         open={editingField !== null}

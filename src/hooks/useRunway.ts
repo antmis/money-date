@@ -19,7 +19,7 @@ interface CashState {
   businessCashBalance: number
   personalCashBalance: number
   monthlyFloor: number
-  pipelineRemaining: number
+  monthlyPersonalExpenses: number
 }
 
 interface QuarterState {
@@ -37,11 +37,11 @@ function loadCash(): CashState {
         businessCashBalance: parsed.businessCashBalance ?? 0,
         personalCashBalance: parsed.personalCashBalance ?? 0,
         monthlyFloor: parsed.monthlyFloor ?? 4250,
-        pipelineRemaining: parsed.pipelineRemaining ?? 0,
+        monthlyPersonalExpenses: parsed.monthlyPersonalExpenses ?? 0,
       }
     }
   } catch { /* ignore */ }
-  return { businessCashBalance: 0, personalCashBalance: 0, monthlyFloor: 4250, pipelineRemaining: 0 }
+  return { businessCashBalance: 0, personalCashBalance: 0, monthlyFloor: 4250, monthlyPersonalExpenses: 0 }
 }
 
 function loadQuarter(): QuarterState {
@@ -73,16 +73,16 @@ export function useRunway() {
   }
 
   const totalCash = cash.businessCashBalance + cash.personalCashBalance
+  const totalMonthlyExpenses = cash.monthlyFloor + cash.monthlyPersonalExpenses
   const deployablePool = calcDeployablePool(
     {
       businessCashBalance: totalCash,
-      pipelineRemaining: cash.pipelineRemaining,
       quartersRemaining,
       bufferMonths: 3,
     },
-    cash.monthlyFloor
+    totalMonthlyExpenses
   )
-  const runwayMonths = calcRunwayMonths(totalCash, cash.monthlyFloor)
+  const runwayMonths = calcRunwayMonths(totalCash, totalMonthlyExpenses)
   const safePerQuarter = calcSafePerQuarter(deployablePool, quartersRemaining)
   const status = calcRunwayStatus(runwayMonths)
 
@@ -91,8 +91,9 @@ export function useRunway() {
     personalCashBalance: cash.personalCashBalance,
     monthlyFloor: cash.monthlyFloor,
     setMonthlyFloor: (v: number) => setCash({ monthlyFloor: v }),
-    pipelineRemaining: cash.pipelineRemaining,
-    setPipelineRemaining: (v: number) => setCash({ pipelineRemaining: v }),
+    monthlyPersonalExpenses: cash.monthlyPersonalExpenses,
+    setMonthlyPersonalExpenses: (v: number) => setCash({ monthlyPersonalExpenses: v }),
+    totalMonthlyExpenses,
     totalCash,
     setCash,
     quarterData,
@@ -101,8 +102,8 @@ export function useRunway() {
     runwayMonths,
     safePerQuarter,
     status,
-    buffer3mo: cash.monthlyFloor * 3,
-    buffer6mo: cash.monthlyFloor * 6,
+    buffer3mo: totalMonthlyExpenses * 3,
+    buffer6mo: totalMonthlyExpenses * 6,
     quartersRemaining,
   }
 }

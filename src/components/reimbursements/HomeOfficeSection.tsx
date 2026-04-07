@@ -1,5 +1,6 @@
-import { Card, Field, Input, Label, Separator, Typography } from '@/components/ui'
-import type { HomeOfficeExpenses } from '@/types'
+import { Pencil, Trash2 } from 'lucide-react'
+import { Card, Button, Field, Input, Label, LineItem, Separator, Typography } from '@/components/ui'
+import type { OfficeMonthlyData } from '@/types'
 import { calcOfficeRate, calcOfficeReimbursement } from '@/lib/calculations'
 
 interface ExpenseRowProps {
@@ -34,78 +35,67 @@ function ExpenseRow({ label, id, value, rate, onChange }: ExpenseRowProps) {
   )
 }
 
-interface HomeOfficeSectionProps {
-  title: string
-  expenses: HomeOfficeExpenses
-  onChange: (field: keyof HomeOfficeExpenses, value: number | string) => void
+interface OfficeLocationSectionProps {
+  office: OfficeMonthlyData
+  onChange: (field: keyof OfficeMonthlyData, value: number | string) => void
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export function HomeOfficeSection({ title, expenses, onChange }: HomeOfficeSectionProps) {
-  const rate = calcOfficeRate(expenses)
-  const total = calcOfficeReimbursement(expenses)
+export function OfficeLocationSection({ office, onChange, onEdit, onDelete }: OfficeLocationSectionProps) {
+  const rate = calcOfficeRate(office)
+  const total = calcOfficeReimbursement(office)
   const ratePct = (rate * 100).toFixed(1)
+  const slug = office.templateId
+  const hasLocation = office.address || office.officeSqft > 0 || office.totalSqft > 0
+
+  const titleNode = hasLocation ? (
+    <div>
+      <div className="text-base font-semibold">{office.name}</div>
+      {office.address && (
+        <div className="text-xs font-normal text-muted-foreground mt-0.5">{office.address}</div>
+      )}
+    </div>
+  ) : (
+    office.name
+  )
+
+  const headerExtraNode = (
+    <div className="flex items-start gap-2">
+      {hasLocation && (
+        <div className="text-right">
+          <div className="text-sm text-muted-foreground">{ratePct}% reimbursement</div>
+          {(office.officeSqft > 0 || office.totalSqft > 0) && (
+            <div className="text-xs text-muted-foreground mt-0.5">
+              {office.officeSqft} / {office.totalSqft} sq ft
+            </div>
+          )}
+        </div>
+      )}
+      <div className="flex gap-1">
+        {onEdit && (
+          <Button variant="ghost" size="sm" onClick={onEdit} className="h-7 w-7 p-0">
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        {onDelete && (
+          <Button variant="ghost" size="sm" onClick={onDelete} className="h-7 w-7 p-0">
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+    </div>
+  )
 
   return (
-    <Card
-      title={title}
-      headerExtra={
-        <Typography variant="small" as="span">
-          {expenses.officeSqft > 0 && expenses.apartmentSqft > 0
-            ? `${ratePct}% reimbursement`
-            : 'enter sq ft to calculate rate'}
-        </Typography>
-      }
-    >
-      <Field>
-        <Label htmlFor={`${title}-address`}>Address</Label>
-        <Input
-          id={`${title}-address`}
-          placeholder="123 Main St, Denver, CO 80218"
-          value={expenses.address}
-          onChange={(e) => onChange('address', e.target.value)}
-        />
-      </Field>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Field>
-          <Label htmlFor={`${title}-officeSqft`}>Office sq ft</Label>
-          <Input
-            id={`${title}-officeSqft`}
-            type="number"
-            min="0"
-            step="1"
-            placeholder="125"
-            value={expenses.officeSqft || ''}
-            onChange={(e) => onChange('officeSqft', Number(e.target.value) || 0)}
-          />
-        </Field>
-        <Field>
-          <Label htmlFor={`${title}-apartmentSqft`}>Apartment sq ft</Label>
-          <Input
-            id={`${title}-apartmentSqft`}
-            type="number"
-            min="0"
-            step="1"
-            placeholder="625"
-            value={expenses.apartmentSqft || ''}
-            onChange={(e) => onChange('apartmentSqft', Number(e.target.value) || 0)}
-          />
-        </Field>
-      </div>
-
+    <Card title={titleNode} headerExtra={headerExtraNode}>
+      <ExpenseRow label="Rent" id={`${slug}-rent`} value={office.rent} rate={rate} onChange={(v) => onChange('rent', v)} />
+      <ExpenseRow label="Utilities" id={`${slug}-utilities`} value={office.utilities} rate={rate} onChange={(v) => onChange('utilities', v)} />
+      <ExpenseRow label="Rent Insurance" id={`${slug}-rentInsurance`} value={office.rentInsurance} rate={rate} onChange={(v) => onChange('rentInsurance', v)} />
+      <ExpenseRow label="Alarm & Security" id={`${slug}-alarm`} value={office.alarm} rate={rate} onChange={(v) => onChange('alarm', v)} />
+      <ExpenseRow label="Cleaning" id={`${slug}-cleaning`} value={office.cleaning} rate={rate} onChange={(v) => onChange('cleaning', v)} />
       <Separator />
-
-      <ExpenseRow label="Alarm & Security" id={`${title}-alarm`} value={expenses.alarm} rate={rate} onChange={(v) => onChange('alarm', v)} />
-      <ExpenseRow label="Cleaning" id={`${title}-cleaning`} value={expenses.cleaning} rate={rate} onChange={(v) => onChange('cleaning', v)} />
-      <ExpenseRow label="Rent" id={`${title}-rent`} value={expenses.rent} rate={rate} onChange={(v) => onChange('rent', v)} />
-      <ExpenseRow label="Rent Insurance" id={`${title}-rentInsurance`} value={expenses.rentInsurance} rate={rate} onChange={(v) => onChange('rentInsurance', v)} />
-      <ExpenseRow label="Utilities" id={`${title}-utilities`} value={expenses.utilities} rate={rate} onChange={(v) => onChange('utilities', v)} />
-
-      <Separator />
-      <div className="flex justify-between items-center">
-        <Typography variant="muted" as="span">Section total</Typography>
-        <Typography variant="amount" as="span">${total.toFixed(2)}</Typography>
-      </div>
+      <LineItem label="Section total" value={`$${total.toFixed(2)}`} />
     </Card>
   )
 }

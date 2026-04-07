@@ -1,10 +1,12 @@
 import * as React from "react"
-import { Card as CardPrimitive, CardContent, CardHeader, CardTitle } from "@/components/ui/primitives/card"
+import { Card as CardPrimitive, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/primitives/card"
 import { cn } from "@/lib/utils"
 
 interface CardProps {
   /** Main title rendered in the card header */
   title?: React.ReactNode
+  /** Description rendered below the title in the card header */
+  description?: React.ReactNode
   /** Content rendered before the title in the header (e.g. a prompt label) */
   headerPre?: React.ReactNode
   /** Content rendered after the title in the header (e.g. helper text) */
@@ -17,9 +19,9 @@ interface CardProps {
   className?: string
 }
 
-export function Card({ title, headerPre, headerPost, headerExtra, children, className }: CardProps) {
+export function Card({ title, description, headerPre, headerPost, headerExtra, children, className }: CardProps) {
   const hasHeader =
-    title != null || headerPre != null || headerPost != null || headerExtra != null
+    title != null || description != null || headerPre != null || headerPost != null || headerExtra != null
 
   return (
     <CardPrimitive className={className}>
@@ -34,6 +36,7 @@ export function Card({ title, headerPre, headerPost, headerExtra, children, clas
           ) : (
             title != null && <CardTitle className="text-base">{title}</CardTitle>
           )}
+          {description != null && <CardDescription>{description}</CardDescription>}
           {headerPost}
         </CardHeader>
       )}

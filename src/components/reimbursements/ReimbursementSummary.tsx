@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Card, Button, Field, Input, Label, Separator, Badge, Typography } from '@/components/ui'
+import { Card, Button, Field, Grid, Input, Label, LineItem, Separator, Badge, Typography } from '@/components/ui'
 import type { MonthlyReimbursement } from '@/types'
 import {
   calcOfficeReimbursement,
   calcMileageReimbursement,
   calcPhoneInternetReimbursement,
+  calcHealthInsuranceReimbursement,
   calcTotalMonthlyReimbursement,
 } from '@/lib/calculations'
 
@@ -18,10 +19,10 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
   const [paymentMethod, setPaymentMethod] = useState(data.paymentMethod)
   const [paidDate, setPaidDate] = useState(data.paidDate)
 
-  const homeOfficeTotal = calcOfficeReimbursement(data.homeOffice)
-  const recStudioTotal = calcOfficeReimbursement(data.recordingStudio)
+  const officesTotal = data.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
   const mileageTotal = calcMileageReimbursement(data.businessMiles)
   const phoneTotal = calcPhoneInternetReimbursement(data.phoneInternet)
+  const healthTotal = calcHealthInsuranceReimbursement(data.healthInsurance)
   const grandTotal = calcTotalMonthlyReimbursement(data)
 
   function handleMarkPaid() {
@@ -37,51 +38,39 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
           : undefined
       }
     >
-      <div className="space-y-2">
-        <div className="flex justify-between">
-          <Typography variant="muted" as="span">Home Office</Typography>
-          <Typography variant="label" as="span" numeric>${homeOfficeTotal.toFixed(2)}</Typography>
-        </div>
-        <div className="flex justify-between">
-          <Typography variant="muted" as="span">Recording Studio</Typography>
-          <Typography variant="label" as="span" numeric>${recStudioTotal.toFixed(2)}</Typography>
-        </div>
-        <div className="flex justify-between">
-          <Typography variant="muted" as="span">Mileage</Typography>
-          <Typography variant="label" as="span" numeric>${mileageTotal.toFixed(2)}</Typography>
-        </div>
-        <div className="flex justify-between">
-          <Typography variant="muted" as="span">Phone & Internet</Typography>
-          <Typography variant="label" as="span" numeric>${phoneTotal.toFixed(2)}</Typography>
-        </div>
+      <div className="space-y-1">
+        {data.offices.map((o, i) => (
+          <LineItem
+            key={o.templateId + i}
+            label={o.name || `Office ${i + 1}`}
+            value={`$${calcOfficeReimbursement(o).toFixed(2)}`}
+          />
+        ))}
+        {data.offices.length === 0 && (
+          <LineItem label="Offices" value="$0.00" />
+        )}
+        <LineItem label="Mileage" value={`$${mileageTotal.toFixed(2)}`} />
+        <LineItem label="Phone & Internet" value={`$${phoneTotal.toFixed(2)}`} />
+        <LineItem label="Health Insurance" value={`$${healthTotal.toFixed(2)}`} />
       </div>
 
       <Separator />
 
-      <div className="flex justify-between items-center">
-        <Typography variant="label" as="span">Total Transfer</Typography>
-        <Typography variant="amountLg">${grandTotal.toFixed(2)}</Typography>
-      </div>
+      <LineItem label="Total Transfer" value={<Typography variant="amountLg">${grandTotal.toFixed(2)}</Typography>} />
 
       <Separator />
 
       {data.paid ? (
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <Typography variant="muted" as="span">Payment method</Typography>
-            <Typography variant="body" as="span">{data.paymentMethod || '—'}</Typography>
-          </div>
-          <div className="flex justify-between">
-            <Typography variant="muted" as="span">Date paid</Typography>
-            <Typography variant="body" as="span">{data.paidDate || '—'}</Typography>
-          </div>
+          <LineItem label="Payment method" value={data.paymentMethod || '—'} />
+          <LineItem label="Date paid" value={data.paidDate || '—'} />
           <Button variant="outline" size="sm" className="w-full mt-2" onClick={onMarkUnpaid}>
             Mark as unpaid
           </Button>
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <Grid cols={2} className="gap-3">
             <Field>
               <Label htmlFor="payment-method">Payment method</Label>
               <Input
@@ -100,7 +89,7 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
                 onChange={(e) => setPaidDate(e.target.value)}
               />
             </Field>
-          </div>
+          </Grid>
           <Button className="w-full" onClick={handleMarkPaid} disabled={grandTotal === 0}>
             Mark as paid
           </Button>

@@ -1,34 +1,76 @@
 import { useState } from 'react'
-import type { HomeOfficeExpenses, MonthlyReimbursement, PhoneInternetExpenses } from '@/types'
+import type {
+  HealthInsuranceExpenses,
+  MonthlyReimbursement,
+  OfficeMonthlyData,
+  OfficeTemplate,
+  PhoneInternetExpenses,
+} from '@/types'
 
-const EMPTY_OFFICE: HomeOfficeExpenses = {
-  address: '',
-  officeSqft: 0,
-  apartmentSqft: 0,
-  alarm: 0,
-  cleaning: 0,
-  rent: 0,
-  rentInsurance: 0,
-  utilities: 0,
-}
-
-const EMPTY_PHONE: PhoneInternetExpenses = {
-  internet: 0,
-  phone: 0,
-}
+const TEMPLATES_KEY = 'reimbursement-office-templates'
+const HEALTH_KEY = 'reimbursement-health-template'
 
 function storageKey(year: number, month: number): string {
   return `reimbursements-${year}-${month}`
 }
 
+function readTemplates(): OfficeTemplate[] {
+  try {
+    const stored = localStorage.getItem(TEMPLATES_KEY)
+    if (stored) return JSON.parse(stored) as OfficeTemplate[]
+  } catch {
+    // ignore
+  }
+  return []
+}
+
+function readHealthTemplate(): HealthInsuranceExpenses {
+  try {
+    const stored = localStorage.getItem(HEALTH_KEY)
+    if (stored) return JSON.parse(stored) as HealthInsuranceExpenses
+  } catch {
+    // ignore
+  }
+  return { health: 0, dental: 0, vision: 0 }
+}
+
+function loadMonthRaw(year: number, month: number): MonthlyReimbursement | null {
+  try {
+    const stored = localStorage.getItem(storageKey(year, month))
+    if (stored) return JSON.parse(stored) as MonthlyReimbursement
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 function emptyMonth(year: number, month: number): MonthlyReimbursement {
+  const templates = readTemplates()
+  const prevMonth = month === 1 ? loadMonthRaw(year - 1, 12) : loadMonthRaw(year, month - 1)
+
+  const offices: OfficeMonthlyData[] = templates.map(t => {
+    const prev = prevMonth?.offices?.find(o => o.templateId === t.id)
+    return {
+      templateId: t.id,
+      name: t.name,
+      address: t.address,
+      officeSqft: t.officeSqft,
+      totalSqft: t.totalSqft,
+      alarm: prev?.alarm ?? 0,
+      cleaning: prev?.cleaning ?? 0,
+      rent: prev?.rent ?? 0,
+      rentInsurance: prev?.rentInsurance ?? 0,
+      utilities: prev?.utilities ?? 0,
+    }
+  })
+
   return {
     year,
     month,
-    homeOffice: { ...EMPTY_OFFICE },
-    recordingStudio: { ...EMPTY_OFFICE },
+    offices,
     businessMiles: 0,
-    phoneInternet: { ...EMPTY_PHONE },
+    phoneInternet: { internet: 0, phone: 0 },
+    healthInsurance: readHealthTemplate(),
     paid: false,
     paymentMethod: '',
     paidDate: '',
@@ -36,12 +78,9 @@ function emptyMonth(year: number, month: number): MonthlyReimbursement {
 }
 
 function loadMonth(year: number, month: number): MonthlyReimbursement {
-  try {
-    const stored = localStorage.getItem(storageKey(year, month))
-    if (stored) return JSON.parse(stored) as MonthlyReimbursement
-  } catch {
-    // ignore
-  }
+  const existing = loadMonthRaw(year, month)
+  // Discard old-format records that predate the offices[] schema
+  if (existing && Array.isArray(existing.offices)) return existing
   return emptyMonth(year, month)
 }
 
@@ -65,14 +104,43 @@ export function useReimbursements() {
     setData(loadMonth(newYear, newMonth))
   }
 
-  function updateHomeOffice(field: keyof HomeOfficeExpenses, value: number | string) {
-    const updated = { ...data, homeOffice: { ...data.homeOffice, [field]: value } }
+  function addOfficeToMonth(template: import('@/types').OfficeTemplate) {
+    const newOffice: OfficeMonthlyData = {
+      templateId: template.id,
+      name: template.name,
+      address: template.address,
+      officeSqft: template.officeSqft,
+      totalSqft: template.totalSqft,
+      alarm: 0,
+      cleaning: 0,
+      rent: 0,
+      rentInsurance: 0,
+      utilities: 0,
+    }
+    const updated = { ...data, offices: [...data.offices, newOffice] }
     setData(updated)
     saveMonth(updated)
   }
 
-  function updateRecordingStudio(field: keyof HomeOfficeExpenses, value: number | string) {
-    const updated = { ...data, recordingStudio: { ...data.recordingStudio, [field]: value } }
+  function updateOffice(index: number, field: keyof OfficeMonthlyData, value: number | string) {
+    const offices = data.offices.map((o, i) =>
+      i === index ? { ...o, [field]: value } : o
+    )
+    const updated = { ...data, offices }
+    setData(updated)
+    saveMonth(updated)
+  }
+
+  function updateOfficeMetadata(index: number, changes: Partial<OfficeMonthlyData>) {
+    const offices = data.offices.map((o, i) => i === index ? { ...o, ...changes } : o)
+    const updated = { ...data, offices }
+    setData(updated)
+    saveMonth(updated)
+  }
+
+  function removeOfficeFromMonth(index: number) {
+    const offices = data.offices.filter((_, i) => i !== index)
+    const updated = { ...data, offices }
     setData(updated)
     saveMonth(updated)
   }
@@ -85,6 +153,12 @@ export function useReimbursements() {
 
   function updatePhoneInternet(field: keyof PhoneInternetExpenses, value: number) {
     const updated = { ...data, phoneInternet: { ...data.phoneInternet, [field]: value } }
+    setData(updated)
+    saveMonth(updated)
+  }
+
+  function updateHealthInsurance(field: keyof HealthInsuranceExpenses, value: number) {
+    const updated = { ...data, healthInsurance: { ...data.healthInsurance, [field]: value } }
     setData(updated)
     saveMonth(updated)
   }
@@ -110,10 +184,13 @@ export function useReimbursements() {
     year,
     month,
     switchMonth,
-    updateHomeOffice,
-    updateRecordingStudio,
+    addOfficeToMonth,
+    updateOffice,
+    updateOfficeMetadata,
+    removeOfficeFromMonth,
     updateMiles,
     updatePhoneInternet,
+    updateHealthInsurance,
     markPaid,
     markUnpaid,
     getMonthData,

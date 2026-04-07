@@ -1,7 +1,6 @@
 import { PageContainer } from '@/components/layout/PageContainer'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { QuarterSummary } from '@/components/quarter/QuarterSummary'
-import { CashBalanceCards } from '@/components/runway/CashBalanceCards'
 import { Card, Field, Input, Label, Select } from '@/components/ui'
 import { useRunway } from '@/hooks/useRunway'
 import { useAllocations } from '@/hooks/useAllocations'
@@ -15,14 +14,6 @@ export function Quarter() {
   const {
     quarterData,
     setQuarter,
-    businessCashBalance,
-    personalCashBalance,
-    totalCash,
-    setCash,
-    monthlyFloor,
-    setMonthlyFloor,
-    pipelineRemaining,
-    setPipelineRemaining,
   } = useRunway()
   const { totalGoalsPerQ } = useGoals()
   const { rates } = useAllocations()
@@ -35,17 +26,6 @@ export function Quarter() {
       <SectionHeader
         title="Quarter"
         description="What landed this quarter and what can I distribute?"
-      />
-
-      <CashBalanceCards
-        businessCashBalance={businessCashBalance}
-        personalCashBalance={personalCashBalance}
-        totalCash={totalCash}
-        onChange={(field, value) => setCash({ [field]: value })}
-        monthlyFloor={monthlyFloor}
-        onMonthlyFloorChange={setMonthlyFloor}
-        pipelineRemaining={pipelineRemaining}
-        onPipelineChange={setPipelineRemaining}
       />
 
       <Card title="This Quarter">
@@ -83,9 +63,6 @@ export function Quarter() {
             }
           />
         </Field>
-        <p className="text-sm text-muted-foreground">
-          Update Remaining Pipeline on the Runway tab when this payment lands.
-        </p>
       </Card>
 
       <QuarterSummary income={income} breakdown={breakdown} />

@@ -1,9 +1,7 @@
 export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4'
-export type TruckMode = 'payoff' | 'mods'
 
 export interface RunwayInputs {
   businessCashBalance: number
-  pipelineRemaining: number
   quartersRemaining: number
   bufferMonths: 3 | 6
 }
@@ -39,12 +37,6 @@ export interface Goal {
   quarterlyContribution: number
 }
 
-export interface TruckGoal {
-  currentMode: TruckMode
-  payoffBalance: number
-  modFundBalance: number
-  quarterlyAmount: number
-}
 
 export interface Donation {
   id: string
@@ -73,15 +65,39 @@ export interface JournalEntry {
   }
 }
 
-export interface HomeOfficeExpenses {
+// Reimbursements
+
+export interface OfficeTemplate {
+  id: string
+  name: string
   address: string
   officeSqft: number
-  apartmentSqft: number
+  totalSqft: number
+}
+
+export interface OfficeMonthlyData {
+  templateId: string
+  name: string
+  address: string
+  officeSqft: number
+  totalSqft: number
   alarm: number
   cleaning: number
   rent: number
   rentInsurance: number
   utilities: number
+}
+
+export interface HealthInsuranceTemplate {
+  health: number
+  dental: number
+  vision: number
+}
+
+export interface HealthInsuranceExpenses {
+  health: number
+  dental: number
+  vision: number
 }
 
 export interface PhoneInternetExpenses {
@@ -92,10 +108,10 @@ export interface PhoneInternetExpenses {
 export interface MonthlyReimbursement {
   year: number
   month: number // 1–12
-  homeOffice: HomeOfficeExpenses
-  recordingStudio: HomeOfficeExpenses
+  offices: OfficeMonthlyData[]
   businessMiles: number
   phoneInternet: PhoneInternetExpenses
+  healthInsurance: HealthInsuranceExpenses
   paid: boolean
   paymentMethod: string
   paidDate: string

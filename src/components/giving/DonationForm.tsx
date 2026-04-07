@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
-import { Card, Field, Input, Label, Button, Select, Typography } from '@/components/ui'
+import { Card, Field, Grid, Input, Label, Button, Select, Typography } from '@/components/ui'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { KNOWN_ORGS } from '@/lib/calculations'
@@ -74,7 +74,7 @@ export function DonationForm({ onSubmit }: DonationFormProps) {
   return (
     <Card title="Add Donation">
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Grid>
             <Field>
               <Label>Date</Label>
               <Popover open={calOpen} onOpenChange={setCalOpen}>
@@ -119,7 +119,7 @@ export function DonationForm({ onSubmit }: DonationFormProps) {
               <Input id="amount" type="number" placeholder="0" {...register('amount', { valueAsNumber: true })} />
               {errors.amount && <Typography variant="small" color="danger">{errors.amount.message}</Typography>}
             </Field>
-          </div>
+          </Grid>
 
           <Field>
             <Label htmlFor="receipt">Receipt (PDF)</Label>

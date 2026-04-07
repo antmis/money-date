@@ -1,11 +1,9 @@
-import type { AllocationRates, HomeOfficeExpenses, MonthlyReimbursement, PaymentAllocation, PhoneInternetExpenses, RunwayInputs } from '@/types'
+import type { AllocationRates, HealthInsuranceExpenses, MonthlyReimbursement, OfficeMonthlyData, PaymentAllocation, PhoneInternetExpenses, RunwayInputs } from '@/types'
 
 export const DEFAULT_TAX_RATE = 0.30
 export const DEFAULT_SEP_RATE = 0.15
 export const DEFAULT_GIVING_RATE = 0.10
 export const DEFAULT_GOALS_RATE = 0.10
-export const DEFAULT_QUARTERLY_GOAL = 3000
-export const DEFAULT_HOME_CONTRIBUTION = 3000
 export const KNOWN_ORGS = [
   'Denver Animal Shelter',
   'Atlanta Humane Society',
@@ -18,7 +16,7 @@ export function calcDeployablePool(
   inputs: RunwayInputs,
   monthlyFloor: number
 ): number {
-  const total = inputs.businessCashBalance + inputs.pipelineRemaining
+  const total = inputs.businessCashBalance
   const buffer = monthlyFloor * 3 * inputs.quartersRemaining
   return Math.max(0, total - buffer)
 }
@@ -103,14 +101,14 @@ export function calcProgressPct(
 export const MILEAGE_RATE_PER_MILE = 0.70  // 2026 IRS rate
 export const PHONE_INTERNET_RATE = 0.70
 
-export function calcOfficeRate(expenses: HomeOfficeExpenses): number {
-  if (expenses.apartmentSqft <= 0) return 0
-  return Math.min(1, expenses.officeSqft / expenses.apartmentSqft)
+export function calcOfficeRate(office: OfficeMonthlyData): number {
+  if (office.totalSqft <= 0) return 0
+  return Math.min(1, office.officeSqft / office.totalSqft)
 }
 
-export function calcOfficeReimbursement(expenses: HomeOfficeExpenses): number {
-  const rate = calcOfficeRate(expenses)
-  const total = expenses.alarm + expenses.cleaning + expenses.rent + expenses.rentInsurance + expenses.utilities
+export function calcOfficeReimbursement(office: OfficeMonthlyData): number {
+  const rate = calcOfficeRate(office)
+  const total = office.alarm + office.cleaning + office.rent + office.rentInsurance + office.utilities
   return total * rate
 }
 
@@ -122,11 +120,16 @@ export function calcPhoneInternetReimbursement(expenses: PhoneInternetExpenses):
   return (expenses.internet + expenses.phone) * PHONE_INTERNET_RATE
 }
 
+export function calcHealthInsuranceReimbursement(health: HealthInsuranceExpenses): number {
+  return health.health + health.dental + health.vision
+}
+
 export function calcTotalMonthlyReimbursement(month: MonthlyReimbursement): number {
+  const officesTotal = month.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
   return (
-    calcOfficeReimbursement(month.homeOffice) +
-    calcOfficeReimbursement(month.recordingStudio) +
+    officesTotal +
     calcMileageReimbursement(month.businessMiles) +
-    calcPhoneInternetReimbursement(month.phoneInternet)
+    calcPhoneInternetReimbursement(month.phoneInternet) +
+    calcHealthInsuranceReimbursement(month.healthInsurance)
   )
 }

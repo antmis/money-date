@@ -1,44 +1,53 @@
 import { useState } from 'react'
-import { DEFAULT_HOME_CONTRIBUTION, DEFAULT_QUARTERLY_GOAL } from '@/lib/calculations'
+import type { Goal } from '@/types'
 
 const GOALS_KEY = 'money-date-goals'
 
-interface GoalsState {
-  homeTarget: number
-  homeCurrent: number
-  homeContribution: number
-  truckSavingsPerQ: number
-}
-
-function loadGoals(): GoalsState {
+function loadGoals(): Goal[] {
   try {
     const stored = localStorage.getItem(GOALS_KEY)
-    if (stored) return JSON.parse(stored) as GoalsState
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) return parsed as Goal[]
+      // Discard legacy flat-object shape
+      localStorage.removeItem(GOALS_KEY)
+    }
   } catch { /* ignore */ }
-  return {
-    homeTarget: 100000,
-    homeCurrent: 0,
-    homeContribution: DEFAULT_HOME_CONTRIBUTION,
-    truckSavingsPerQ: DEFAULT_QUARTERLY_GOAL,
-  }
+  return []
+}
+
+function saveGoals(goals: Goal[]) {
+  localStorage.setItem(GOALS_KEY, JSON.stringify(goals))
 }
 
 export function useGoals() {
-  const [state, setState] = useState<GoalsState>(loadGoals)
+  const [goals, setGoals] = useState<Goal[]>(loadGoals)
 
-  function update(next: Partial<GoalsState>) {
-    setState((prev) => {
-      const updated = { ...prev, ...next }
-      localStorage.setItem(GOALS_KEY, JSON.stringify(updated))
-      return updated
+  function addGoal(data: Omit<Goal, 'id'>) {
+    setGoals((prev) => {
+      const next = [...prev, { ...data, id: crypto.randomUUID() }]
+      saveGoals(next)
+      return next
     })
   }
 
-  const totalGoalsPerQ = state.homeContribution + state.truckSavingsPerQ
-
-  return {
-    ...state,
-    update,
-    totalGoalsPerQ,
+  function updateGoal(id: string, patch: Partial<Omit<Goal, 'id'>>) {
+    setGoals((prev) => {
+      const next = prev.map((g) => g.id === id ? { ...g, ...patch } : g)
+      saveGoals(next)
+      return next
+    })
   }
+
+  function deleteGoal(id: string) {
+    setGoals((prev) => {
+      const next = prev.filter((g) => g.id !== id)
+      saveGoals(next)
+      return next
+    })
+  }
+
+  const totalGoalsPerQ = goals.reduce((sum, g) => sum + g.quarterlyContribution, 0)
+
+  return { goals, totalGoalsPerQ, addGoal, updateGoal, deleteGoal }
 }

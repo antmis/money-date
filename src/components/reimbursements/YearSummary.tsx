@@ -1,32 +1,37 @@
-import { Card, Badge, Typography } from '@/components/ui'
+import { Card, Badge, Select, Typography, Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell } from '@/components/ui'
 import type { MonthlyReimbursement } from '@/types'
 import {
   calcOfficeReimbursement,
   calcMileageReimbursement,
   calcPhoneInternetReimbursement,
+  calcHealthInsuranceReimbursement,
   calcTotalMonthlyReimbursement,
 } from '@/lib/calculations'
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+const YEAR_OPTIONS = ['2025', '2026']
 
 interface YearSummaryProps {
   year: number
   currentMonth: number
   getMonthData: (year: number, month: number) => MonthlyReimbursement
   onEdit: (year: number, month: number) => void
+  onYearChange: (year: number) => void
 }
 
-export function YearSummary({ year, currentMonth, getMonthData, onEdit }: YearSummaryProps) {
+export function YearSummary({ year, currentMonth, getMonthData, onEdit, onYearChange }: YearSummaryProps) {
   const months = Array.from({ length: 12 }, (_, i) => {
     const m = i + 1
     const data = getMonthData(year, m)
+    const officesTotal = data.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
     return {
       month: m,
       data,
-      homeTotal: calcOfficeReimbursement(data.homeOffice),
-      studioTotal: calcOfficeReimbursement(data.recordingStudio),
+      officesTotal,
       milesTotal: calcMileageReimbursement(data.businessMiles),
       phoneTotal: calcPhoneInternetReimbursement(data.phoneInternet),
+      healthTotal: calcHealthInsuranceReimbursement(data.healthInsurance),
       total: calcTotalMonthlyReimbursement(data),
     }
   })
@@ -34,59 +39,63 @@ export function YearSummary({ year, currentMonth, getMonthData, onEdit }: YearSu
   const yearTotal = months.reduce((sum, m) => sum + m.total, 0)
 
   return (
-    <Card title={year}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b text-xs text-muted-foreground">
-              <th className="text-left py-2 pr-4 font-medium">Month</th>
-              <th className="text-right py-2 px-2 font-medium">Home</th>
-              <th className="text-right py-2 px-2 font-medium">Studio</th>
-              <th className="text-right py-2 px-2 font-medium">Miles</th>
-              <th className="text-right py-2 px-2 font-medium">Phone</th>
-              <th className="text-right py-2 pl-4 font-medium">Total</th>
-              <th className="text-right py-2 pl-2 font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {months.map(({ month, data, homeTotal, studioTotal, milesTotal, phoneTotal, total }) => {
-              const isCurrent = month === currentMonth
-              return (
-                <tr
-                  key={month}
-                  className={`border-b last:border-0 cursor-pointer hover:bg-muted/50 transition-colors ${isCurrent ? 'font-medium' : ''}`}
-                  onClick={() => onEdit(year, month)}
-                >
-                  <td className="py-2 pr-4">
-                    {MONTH_NAMES[month - 1]}
-                    {isCurrent && <Typography variant="small" as="span" className="ml-1">←</Typography>}
-                  </td>
-                  <td className="text-right py-2 px-2 tabular-nums">{homeTotal > 0 ? `$${homeTotal.toFixed(0)}` : '—'}</td>
-                  <td className="text-right py-2 px-2 tabular-nums">{studioTotal > 0 ? `$${studioTotal.toFixed(0)}` : '—'}</td>
-                  <td className="text-right py-2 px-2 tabular-nums">{milesTotal > 0 ? `$${milesTotal.toFixed(0)}` : '—'}</td>
-                  <td className="text-right py-2 px-2 tabular-nums">{phoneTotal > 0 ? `$${phoneTotal.toFixed(0)}` : '—'}</td>
-                  <td className="text-right py-2 pl-4 tabular-nums font-medium">{total > 0 ? `$${total.toFixed(2)}` : '—'}</td>
-                  <td className="text-right py-2 pl-2">
-                    {data.paid
-                      ? <Badge variant="outline" className="text-xs text-green-600 border-green-600">Paid</Badge>
-                      : total > 0
-                        ? <Badge variant="outline" className="text-xs text-amber-500 border-amber-500">Due</Badge>
-                        : null}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-          <tfoot>
-            <tr className="border-t font-semibold">
-              <td className="py-2 pr-4">Total</td>
-              <td colSpan={4} />
-              <td className="text-right py-2 pl-4 tabular-nums">${yearTotal.toFixed(2)}</td>
-              <td />
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+    <Card>
+      <Select
+        value={String(year)}
+        onValueChange={(v) => onYearChange(Number(v))}
+        options={YEAR_OPTIONS.map(y => ({ value: y, label: y }))}
+        className="w-24"
+      />
+      <Table className="table-fixed">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-16">Month</TableHead>
+            <TableHead className="w-20 text-right">Offices</TableHead>
+            <TableHead className="w-16 text-right">Miles</TableHead>
+            <TableHead className="w-16 text-right">Phone</TableHead>
+            <TableHead className="w-16 text-right">Health</TableHead>
+            <TableHead className="w-24 text-right">Total</TableHead>
+            <TableHead className="w-16 text-right">Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {months.map(({ month, data, officesTotal, milesTotal, phoneTotal, healthTotal, total }) => {
+            const isCurrent = month === currentMonth && year === new Date().getFullYear()
+            return (
+              <TableRow
+                key={month}
+                className={`cursor-pointer ${isCurrent ? 'font-medium' : ''}`}
+                onClick={() => onEdit(year, month)}
+              >
+                <TableCell className="pr-4">
+                  {MONTH_NAMES[month - 1]}
+                  {isCurrent && <Typography variant="small" as="span" className="ml-1">←</Typography>}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">{officesTotal > 0 ? `$${officesTotal.toFixed(0)}` : '—'}</TableCell>
+                <TableCell className="text-right tabular-nums">{milesTotal > 0 ? `$${milesTotal.toFixed(0)}` : '—'}</TableCell>
+                <TableCell className="text-right tabular-nums">{phoneTotal > 0 ? `$${phoneTotal.toFixed(0)}` : '—'}</TableCell>
+                <TableCell className="text-right tabular-nums">{healthTotal > 0 ? `$${healthTotal.toFixed(0)}` : '—'}</TableCell>
+                <TableCell className="text-right tabular-nums font-medium">{total > 0 ? `$${total.toFixed(2)}` : '—'}</TableCell>
+                <TableCell className="text-right">
+                  {data.paid
+                    ? <Badge variant="outline" className="text-xs text-green-600 border-green-600">Paid</Badge>
+                    : total > 0
+                      ? <Badge variant="outline" className="text-xs text-amber-500 border-amber-500">Due</Badge>
+                      : null}
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell className="pr-4 font-semibold">Total</TableCell>
+            <TableCell colSpan={4} />
+            <TableCell className="text-right tabular-nums font-semibold">${yearTotal.toFixed(2)}</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableFooter>
+      </Table>
     </Card>
   )
 }

@@ -1,5 +1,5 @@
 import { Paperclip } from 'lucide-react'
-import { Card, Separator, Typography } from '@/components/ui'
+import { Card, LineItem, Separator, StatItem, Typography } from '@/components/ui'
 import type { Donation } from '@/types'
 
 function fmt(n: number) {
@@ -29,10 +29,7 @@ export function GivingLog({ donations, ytdTotal }: GivingLogProps) {
             {donations.map((d) => (
               <div key={d.id}>
                 <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 py-2.5 items-center">
-                  <div>
-                    <Typography variant="label">{d.organization}</Typography>
-                    <Typography variant="small">{d.date}</Typography>
-                  </div>
+                  <StatItem label={d.date} value={d.organization} />
                   <Typography variant="label" as="span" numeric>{fmt(d.amount)}</Typography>
                   <span>
                     {d.receiptName
@@ -49,10 +46,7 @@ export function GivingLog({ donations, ytdTotal }: GivingLogProps) {
 
         {donations.length > 0 && (
           <div className="pt-2 space-y-1">
-            <div className="flex justify-between">
-              <Typography variant="label" as="span">YTD Total</Typography>
-              <Typography variant="amount" as="span">{fmt(ytdTotal)}</Typography>
-            </div>
+            <LineItem label="YTD Total" value={fmt(ytdTotal)} />
             <Separator className="my-2" />
             <Typography variant="caption">For your accountant</Typography>
             <Typography variant="small">

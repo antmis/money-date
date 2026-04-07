@@ -1,8 +1,8 @@
 import { PageContainer } from '@/components/layout/PageContainer'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { StatCard } from '@/components/shared/StatCard'
-import { StatGrid } from '@/components/shared/StatGrid'
 import { CashBalanceCards } from '@/components/runway/CashBalanceCards'
+import { Grid } from '@/components/ui'
 import { RunwayStatus } from '@/components/runway/RunwayStatus'
 import { useRunway } from '@/hooks/useRunway'
 
@@ -18,14 +18,13 @@ export function Runway() {
     setCash,
     monthlyFloor,
     setMonthlyFloor,
-    pipelineRemaining,
-    setPipelineRemaining,
-    deployablePool,
+    monthlyPersonalExpenses,
+    setMonthlyPersonalExpenses,
+    totalMonthlyExpenses,
     runwayMonths,
-    safePerQuarter,
     status,
     buffer3mo,
-    quartersRemaining,
+    buffer6mo,
   } = useRunway()
 
   const statusVariant = status === 'healthy' ? 'success' : status === 'lean' ? 'warning' : 'danger'
@@ -44,15 +43,16 @@ export function Runway() {
         onChange={(field, value) => setCash({ [field]: value })}
         monthlyFloor={monthlyFloor}
         onMonthlyFloorChange={setMonthlyFloor}
-        pipelineRemaining={pipelineRemaining}
-        onPipelineChange={setPipelineRemaining}
+        monthlyPersonalExpenses={monthlyPersonalExpenses}
+        onMonthlyPersonalExpensesChange={setMonthlyPersonalExpenses}
+        totalMonthlyExpenses={totalMonthlyExpenses}
       />
 
-      <StatGrid>
+      <Grid>
         <StatCard
           label="Runway"
           value={`${runwayMonths.toFixed(1)} mo`}
-          sub={`${fmt(monthlyFloor)}/mo floor`}
+          sub={`${fmt(totalMonthlyExpenses)}/mo total`}
           variant={statusVariant}
         />
         <StatCard
@@ -61,19 +61,12 @@ export function Runway() {
           sub="minimum reserve"
         />
         <StatCard
-          label="Deployable Pool"
-          value={fmt(deployablePool)}
-          sub="after buffer"
-          variant={statusVariant}
+          label="6-Month Buffer"
+          value={fmt(buffer6mo)}
+          sub="comfortable reserve"
         />
-        <StatCard
-          label="Safe Per Quarter"
-          value={fmt(safePerQuarter)}
-          sub={`${quartersRemaining} quarters remaining`}
-          variant={statusVariant}
-        />
-      </StatGrid>
-
+      </Grid>
+      
       <RunwayStatus status={status} months={runwayMonths} />
     </PageContainer>
   )

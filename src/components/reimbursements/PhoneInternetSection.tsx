@@ -1,4 +1,4 @@
-import { Card, Field, Input, Label, Separator, Typography } from '@/components/ui'
+import { Card, Field, Input, Label, LineItem, Separator, Typography } from '@/components/ui'
 import type { PhoneInternetExpenses } from '@/types'
 import { calcPhoneInternetReimbursement, PHONE_INTERNET_RATE } from '@/lib/calculations'
 
@@ -62,10 +62,7 @@ export function PhoneInternetSection({ expenses, onChange }: PhoneInternetSectio
       </div>
 
       <Separator />
-      <div className="flex justify-between items-center">
-        <Typography variant="muted" as="span">Section total</Typography>
-        <Typography variant="amount" as="span">${total.toFixed(2)}</Typography>
-      </div>
+      <LineItem label="Section total" value={`$${total.toFixed(2)}`} />
     </Card>
   )
 }

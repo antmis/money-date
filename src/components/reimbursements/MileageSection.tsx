@@ -1,4 +1,4 @@
-import { Card, Field, Input, Label, Separator, Typography } from '@/components/ui'
+import { Card, Field, Input, Label, LineItem, Separator, Typography } from '@/components/ui'
 import { calcMileageReimbursement, MILEAGE_RATE_PER_MILE } from '@/lib/calculations'
 
 interface MileageSectionProps {
@@ -35,10 +35,7 @@ export function MileageSection({ miles, onChange }: MileageSectionProps) {
         </div>
       </div>
       <Separator />
-      <div className="flex justify-between items-center">
-        <Typography variant="muted" as="span">Section total</Typography>
-        <Typography variant="amount" as="span">${reimbursement.toFixed(2)}</Typography>
-      </div>
+      <LineItem label="Section total" value={`$${reimbursement.toFixed(2)}`} />
     </Card>
   )
 }

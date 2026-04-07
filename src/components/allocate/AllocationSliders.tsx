@@ -1,4 +1,4 @@
-import { Card, Field, Slider, Label, Separator, Typography } from '@/components/ui'
+import { Card, Field, Slider, Label, Separator, StatItem, Typography } from '@/components/ui'
 import type { AllocationRates } from '@/types'
 
 function fmt(n: number) {
@@ -45,10 +45,7 @@ export function AllocationSliders({ rates, onRatesChange, goalsAmount }: Allocat
         <Separator />
 
         <div className="flex items-center justify-between py-1">
-          <div>
-            <Typography variant="label">Goals</Typography>
-            <Typography variant="small">Set in Goals tab</Typography>
-          </div>
+          <StatItem label="Set in Goals tab" value="Goals" />
           <Typography variant="amount" color="goals">
             {fmt(goalsAmount)} / quarter
           </Typography>
