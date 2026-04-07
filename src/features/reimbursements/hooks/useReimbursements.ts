@@ -70,7 +70,11 @@ function emptyMonth(year: number, month: number): MonthlyReimbursement {
     offices,
     businessMiles: 0,
     phoneInternet: { internet: 0, phone: 0 },
-    healthInsurance: readHealthTemplate(),
+    healthInsurance: {
+      health: prevMonth?.healthInsurance?.health ?? 0,
+      dental: prevMonth?.healthInsurance?.dental ?? 0,
+      vision: prevMonth?.healthInsurance?.vision ?? 0,
+    },
     paid: false,
     paymentMethod: '',
     paidDate: '',
@@ -176,7 +180,19 @@ export function useReimbursements() {
   }
 
   function getMonthData(y: number, m: number): MonthlyReimbursement {
-    return loadMonth(y, m)
+    const existing = loadMonthRaw(y, m)
+    if (existing && Array.isArray(existing.offices)) return existing
+    return {
+      year: y,
+      month: m,
+      offices: [],
+      businessMiles: 0,
+      phoneInternet: { internet: 0, phone: 0 },
+      healthInsurance: { health: 0, dental: 0, vision: 0 },
+      paid: false,
+      paymentMethod: '',
+      paidDate: '',
+    }
   }
 
   return {

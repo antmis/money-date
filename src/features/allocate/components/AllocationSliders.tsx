@@ -1,4 +1,4 @@
-import { Card, Field, Slider, Label, Separator, StatItem, Typography } from '@/ui'
+import { Card, Field, Slider, Label, Separator, StatItem, Typography, YStack, XStack } from '@/ui'
 import type { AllocationRates } from '../types'
 
 function fmt(n: number) {
@@ -20,13 +20,13 @@ const sliderConfig = [
 export function AllocationSliders({ rates, onRatesChange, goalsAmount }: AllocationSlidersProps) {
   return (
     <Card title="Allocation Rates">
-      <div className="space-y-4">
+      <YStack gap={2}>
         {sliderConfig.map(({ key, label, min, max }) => (
           <Field key={key}>
-            <div className="flex justify-between items-center">
+            <XStack justify="between" align="center">
               <Label>{label}</Label>
               <Typography variant="label" numeric>{rates[key]}%</Typography>
-            </div>
+            </XStack>
             <Slider
               min={min}
               max={max}
@@ -44,13 +44,13 @@ export function AllocationSliders({ rates, onRatesChange, goalsAmount }: Allocat
 
         <Separator />
 
-        <div className="flex items-center justify-between py-1">
+        <XStack justify="between" align="center">
           <StatItem label="Set in Goals tab" value="Goals" />
           <Typography variant="amount" color="goals">
             {fmt(goalsAmount)} / quarter
           </Typography>
-        </div>
-      </div>
+        </XStack>
+      </YStack>
     </Card>
   )
 }

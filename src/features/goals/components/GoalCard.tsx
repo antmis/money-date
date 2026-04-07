@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, ButtonGroup, Card, Dialog, Field, Grid, Input, Label, Progress, StatItem, Typography } from '@/ui'
+import { Button, ButtonGroup, Card, Dialog, Field, Grid, Input, Label, Progress, StatItem, Typography, XStack, YStack } from '@/ui'
 import { calcQuartersToGoal, calcProgressPct } from '../utils/calculations'
 import type { Goal } from '../types'
 import { Trash2 } from 'lucide-react'
@@ -89,28 +89,26 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
   return (
     <>
       <Card title={goal.name}>
-        <div className="space-y-3">
-          <Grid>
-            <StatItem label="Target" value={fmt(goal.targetAmount)} />
-            <StatItem label="Saved" value={fmt(goal.currentAmount)} />
-            <StatItem label="Per Quarter" value={fmt(goal.quarterlyContribution)} />
-          </Grid>
+        <Grid>
+          <StatItem label="Target" value={fmt(goal.targetAmount)} />
+          <StatItem label="Saved" value={fmt(goal.currentAmount)} />
+          <StatItem label="Per Quarter" value={fmt(goal.quarterlyContribution)} />
+        </Grid>
 
-          <div className="space-y-1">
-            <div className="flex justify-between">
-              <Typography variant="muted" as="span">{pct.toFixed(0)}% complete</Typography>
-              <Typography variant="small" as="span">
-                {quarters !== Infinity ? `~${years} yrs at ${fmt(goal.quarterlyContribution)}/q` : 'Set a contribution'}
-              </Typography>
-            </div>
-            <Progress value={pct} className="h-2" />
-          </div>
+        <YStack gap={1}>
+          <XStack justify="between">
+            <Typography variant="muted" as="span">{pct.toFixed(0)}% complete</Typography>
+            <Typography variant="small" as="span">
+              {quarters !== Infinity ? `~${years} yrs at ${fmt(goal.quarterlyContribution)}/q` : 'Set a contribution'}
+            </Typography>
+          </XStack>
+          <Progress value={pct} className="h-2" />
+        </YStack>
 
-          <ButtonGroup>
-            <Button size="sm" variant="outline" onClick={() => setEditing(true)}>Edit</Button>
-            <Button size="sm" variant="secondary" onClick={() => setConfirmingDelete(true)}><Trash2 /></Button>
-          </ButtonGroup>
-        </div>
+        <ButtonGroup>
+          <Button size="sm" variant="outline" onClick={() => setEditing(true)}>Edit</Button>
+          <Button size="sm" variant="secondary" onClick={() => setConfirmingDelete(true)}><Trash2 /></Button>
+        </ButtonGroup>
       </Card>
 
       <Dialog

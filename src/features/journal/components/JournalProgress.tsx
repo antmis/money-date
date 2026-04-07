@@ -1,4 +1,4 @@
-import { Typography } from '@/ui'
+import { Typography, XStack } from '@/ui'
 
 interface JournalProgressProps {
   currentStep: number
@@ -9,10 +9,10 @@ export function JournalProgress({ currentStep, totalSteps }: JournalProgressProp
   if (currentStep >= totalSteps) return null
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex gap-1.5">
+    <XStack gap={1}>
+      <XStack gap={2} align="center">
         {Array.from({ length: totalSteps }).map((_, i) => (
-          <div
+          <XStack
             key={i}
             className={`h-1.5 w-6 rounded-full transition-colors ${
               i < currentStep
@@ -23,8 +23,8 @@ export function JournalProgress({ currentStep, totalSteps }: JournalProgressProp
             }`}
           />
         ))}
-      </div>
-      <Typography variant="muted" as="span">{currentStep + 1} of {totalSteps}</Typography>
-    </div>
+      </XStack>
+      <Typography className="shrink-0" variant="muted">{currentStep + 1} of {totalSteps}</Typography>
+    </XStack>
   )
 }

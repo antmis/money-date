@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Copy, RotateCcw } from 'lucide-react'
-import { Card, Button, Dialog, Typography } from '@/ui'
+import { Card, Button, Dialog, Typography, XStack, YStack } from '@/ui'
 import { toast } from 'sonner'
 import type { JournalEntry } from '../types'
 
@@ -36,9 +36,9 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+    <YStack gap={4}>
+      <XStack justify="between" align="center">
+        <YStack>
           <Typography variant="heading">
             {entry.quarter} {entry.year} — Reflection
           </Typography>
@@ -47,10 +47,10 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
               Completed {new Date(entry.completedAt).toLocaleDateString()}
             </Typography>
           )}
-        </div>
-        <div className="flex gap-2">
+        </YStack>
+        <XStack gap={2}>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
-            <Copy className="h-3.5 w-3.5 mr-1.5" />
+            <Copy />
             Copy
           </Button>
           <Dialog
@@ -58,7 +58,7 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
             onOpenChange={setOpen}
             trigger={
               <Button variant="outline" size="sm">
-                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                <RotateCcw />
                 New Quarter
               </Button>
             }
@@ -71,10 +71,10 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
               </>
             }
           />
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
-      <div className="space-y-4">
+      <YStack gap={4}>
         {keys.map((key, i) => (
           <Card
             key={key}
@@ -88,7 +88,7 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
             )}
           </Card>
         ))}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   )
 }

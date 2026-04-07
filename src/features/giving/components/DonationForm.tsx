@@ -3,8 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
-import { Card, Field, Grid, Input, Label, Button, Select, Typography } from '@/ui'
-import { Calendar } from '@/ui/calendar'
+import { Card, Field, Grid, Input, Label, Button, Select, Typography, Calendar } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
 import { KNOWN_ORGS } from '../utils/constants'
 import type { Donation } from '../types'
@@ -79,13 +78,14 @@ export function DonationForm({ onSubmit }: DonationFormProps) {
               <Label>Date</Label>
               <Popover open={calOpen} onOpenChange={setCalOpen}>
                 <PopoverTrigger asChild>
-                  <button
+                  <Button
                     type="button"
-                    className="flex w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm hover:bg-muted transition-colors text-left"
+                    className="flex w-full"
+                    variant="outline"
                   >
-                    <CalendarIcon size={14} className="text-muted-foreground shrink-0" />
+                    <CalendarIcon />
                     {formatDisplay(dateValue)}
-                  </button>
+                  </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar

@@ -1,5 +1,5 @@
 import { Card, Typography } from '@/ui'
-import { StatusBadge } from '@/shared/components'
+import { Badge } from '@/shared/components'
 
 type Status = 'healthy' | 'lean' | 'critical'
 
@@ -21,7 +21,7 @@ export function RunwayStatus({ status, months }: RunwayStatusProps) {
       <div className="flex items-start gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <StatusBadge status={status} />
+            <Badge status={status} />
             <Typography variant="muted" as="span">
               {months.toFixed(1)} months of runway
             </Typography>

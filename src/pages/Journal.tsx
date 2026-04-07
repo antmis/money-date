@@ -1,7 +1,7 @@
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { JournalProgress, JournalPrompt, JournalNav, JournalSummary, useJournal } from '@/features/journal'
-import { Typography } from '@/ui'
+import { Typography, YStack } from '@/ui'
 import type { Quarter } from '@/shared/types'
 
 const currentYear = new Date().getFullYear()
@@ -39,7 +39,7 @@ export function Journal() {
       {isSummary ? (
         <JournalSummary entry={entry} onReset={reset} />
       ) : (
-        <div className="space-y-6">
+        <YStack gap={4}>
           <JournalProgress currentStep={currentStep} totalSteps={prompts.length} />
 
           <JournalPrompt
@@ -57,7 +57,7 @@ export function Journal() {
             onNext={goNext}
             onComplete={complete}
           />
-        </div>
+        </YStack>
       )}
     </PageContainer>
   )

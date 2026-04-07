@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Dialog } from '@/ui'
-import { Field, Input, Label } from '@/ui'
+import { Field, Input, Label, Button, XStack } from '@/ui'
 
 interface CashEditDialogProps {
   open: boolean
@@ -28,20 +28,19 @@ export function CashEditDialog({ open, onOpenChange, title, value, onSave }: Cas
       onOpenChange={onOpenChange}
       title={title}
       footer={
-        <div className="flex gap-2 justify-end">
-          <button
+        <XStack gap={2}>
+          <Button
             onClick={() => onOpenChange(false)}
-            className="px-3 py-1.5 text-sm rounded border border-input bg-background hover:bg-muted transition-colors"
+            variant="secondary"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
-            className="px-3 py-1.5 text-sm rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Save
-          </button>
-        </div>
+          </Button>
+        </XStack>
       }
     >
       <Field>

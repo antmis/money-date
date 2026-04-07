@@ -13,7 +13,6 @@ import {
   YearSummary,
   useReimbursements,
   useOfficeTemplates,
-  useHealthTemplate,
 } from '@/features/reimbursements'
 import type { HealthInsuranceExpenses } from '@/features/reimbursements'
 
@@ -56,7 +55,6 @@ export function Reimbursements() {
   } = useReimbursements()
 
   const { addTemplate, updateTemplate } = useOfficeTemplates()
-  const { updateTemplate: updateHealthTemplate } = useHealthTemplate()
 
   // Get current date object
   const now = new Date();
@@ -74,7 +72,6 @@ export function Reimbursements() {
 
   function handleHealthChange(field: keyof HealthInsuranceExpenses, value: number) {
     updateHealthInsurance(field, value)
-    updateHealthTemplate({ [field]: value })
   }
 
   function setField(field: keyof LocationForm, value: string) {
@@ -164,9 +161,12 @@ export function Reimbursements() {
         title="Edit Location"
         className="max-w-md"
         footer={
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => { setEditIndex(null); setForm(emptyForm()) }}>Cancel</Button>
-            <Button onClick={handleEditSave} disabled={!formValid}>Save</Button>
+          <div className="flex gap-2 justify-between w-full">
+            <Button variant="destructive" onClick={() => { setDeleteIndex(editIndex); setEditIndex(null); setForm(emptyForm()) }}>Remove</Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => { setEditIndex(null); setForm(emptyForm()) }}>Cancel</Button>
+              <Button onClick={handleEditSave} disabled={!formValid}>Save</Button>
+            </div>
           </div>
         }
       >

@@ -1,4 +1,4 @@
-import { Button } from '@/ui'
+import { Button, XStack } from '@/ui'
 import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
 
 interface JournalNavProps {
@@ -19,27 +19,27 @@ export function JournalNav({
   const isLast = currentStep === totalSteps - 1
 
   return (
-    <div className="flex items-center justify-between pt-2">
+    <XStack justify="between" >
       <Button
         variant="ghost"
         onClick={onBack}
         disabled={currentStep === 0}
       >
-        <ChevronLeft className="h-4 w-4 mr-1" />
+        <ChevronLeft />
         Back
       </Button>
 
       {isLast ? (
         <Button onClick={onComplete}>
-          <CheckCircle className="h-4 w-4 mr-1.5" />
+          <CheckCircle />
           Complete Quarter
         </Button>
       ) : (
         <Button onClick={onNext}>
           Next
-          <ChevronRight className="h-4 w-4 ml-1" />
+          <ChevronRight />
         </Button>
       )}
-    </div>
+    </XStack>
   )
 }

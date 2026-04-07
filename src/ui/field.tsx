@@ -8,7 +8,7 @@ interface FieldProps {
 
 export function Field({ children, className }: FieldProps) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("w-full space-y-2", className)}>
       {children}
     </div>
   )

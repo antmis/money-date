@@ -1,4 +1,4 @@
-import { Select } from '@/ui'
+import { Select, XStack } from '@/ui'
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -18,7 +18,7 @@ export function MonthSelector({ year, month, onChange }: MonthSelectorProps) {
   const years = [currentYear - 1, currentYear, currentYear + 1]
 
   return (
-    <div className="flex gap-3">
+    <XStack gap={2} align="center">
       <Select
         value={String(month)}
         onValueChange={(v) => onChange(year, Number(v))}
@@ -32,6 +32,6 @@ export function MonthSelector({ year, month, onChange }: MonthSelectorProps) {
         options={years.map(String)}
         className="w-28"
       />
-    </div>
+    </XStack>
   )
 }
