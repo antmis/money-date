@@ -56,15 +56,12 @@ export function Reimbursements() {
 
   return (
     <PageContainer>
-      <XStack justify="between">
-        <SectionHeader
-          title="Reimbursements"
-          description="Monthly business expense reimbursement — transfer from business checking to personal."
-        />
-        <Button onClick={() => openForMonth(now.getFullYear(), now.getMonth() + 1)}>
-          <Plus /><span className="hidden sm:inline">New Reimbursement</span>
-        </Button>
-      </XStack>
+      <SectionHeader
+        title="Reimbursements"
+        description="Monthly business expense reimbursement — transfer from business checking to personal."
+        buttonAction={() => openForMonth(now.getFullYear(), now.getMonth() + 1)}
+        buttonText="New Reimbursement"
+      />
 
       <YearSummary
         year={year}
