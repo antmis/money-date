@@ -1,5 +1,5 @@
 import { PageContainer } from '@/shared/layout'
-import { SectionHeader } from '@/shared/components'
+import { SectionHeader, PageSkeleton } from '@/shared/components'
 import { QuarterSummary } from '@/features/quarter'
 import { useRunway } from '@/features/runway'
 import { useAllocations, calcPaymentAllocation } from '@/features/allocate'
@@ -10,12 +10,11 @@ import type { Quarter as QuarterType } from '@/shared/types'
 const quarters = ['Q1', 'Q2', 'Q3', 'Q4'] as const
 
 export function Quarter() {
-  const {
-    quarterData,
-    setQuarter,
-  } = useRunway()
-  const { totalGoalsPerQ } = useGoals()
-  const { rates } = useAllocations()
+  const { quarterData, setQuarter, loading: runwayLoading } = useRunway()
+  const { totalGoalsPerQ, loading: goalsLoading } = useGoals()
+  const { rates, loading: ratesLoading } = useAllocations()
+
+  if (runwayLoading || goalsLoading || ratesLoading) return <PageSkeleton />
 
   const income = quarterData.incomeReceivedThisQ
   const breakdown = calcPaymentAllocation(income, rates, totalGoalsPerQ)

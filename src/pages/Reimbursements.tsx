@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react'
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { Button, Dialog, XStack, YStack } from '@/ui'
+import { PageSkeleton } from '@/shared/components'
 import {
   MonthSelector,
   OfficeLocationSection,
@@ -27,10 +28,10 @@ export function Reimbursements() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const {
-    data, year, month,
+    data, year, month, yearData, loading,
     switchMonth, addOfficeToMonth, updateOffice, updateOfficeMetadata,
     removeOfficeFromMonth, updateMiles, updatePhoneInternet,
-    updateHealthInsurance, markPaid, markUnpaid, getMonthData, save,
+    updateHealthInsurance, markPaid, markUnpaid, save,
   } = useReimbursements()
 
   const { addTemplate, updateTemplate } = useOfficeTemplates()
@@ -43,6 +44,8 @@ export function Reimbursements() {
     updateOfficeMetadata,
     removeOfficeFromMonth,
   })
+
+  if (loading) return <PageSkeleton />
 
   const now = new Date()
 
@@ -66,9 +69,9 @@ export function Reimbursements() {
       <YearSummary
         year={year}
         currentMonth={month}
-        getMonthData={getMonthData}
+        yearData={yearData}
         onEdit={openForMonth}
-        onYearChange={(newYear) => switchMonth(newYear, month)}
+        onYearChange={(newYear) => void switchMonth(newYear, month)}
       />
 
       {/* Monthly entry dialog */}

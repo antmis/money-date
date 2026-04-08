@@ -1,29 +1,25 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
-import { Button, XStack } from '@/ui'
+import { PageSkeleton } from '@/shared/components'
 import { DonationForm, GivingLog, useGiving } from '@/features/giving'
 import type { Donation } from '@/features/giving'
 
 export function Giving() {
   const [addOpen, setAddOpen] = useState(false)
   const [editingDonation, setEditingDonation] = useState<Donation | null>(null)
-  const { donations, addDonation, updateDonation, removeDonation, ytdTotal } = useGiving()
+  const { donations, addDonation, updateDonation, removeDonation, ytdTotal, loading } = useGiving()
+  if (loading) return <PageSkeleton />
 
   return (
     <PageContainer>
-      <XStack justify="between">
-        <SectionHeader
-          title="Giving"
-          description="Am I actually sending the money I'm allocating? Do I have the receipts?"
-        />
-        <Button onClick={() => setAddOpen(true)}>
-          <Plus className="h-4 w-4 sm:mr-1.5" />
-          <span className="hidden sm:inline">Log Donation</span>
-        </Button>
-      </XStack>
+      <SectionHeader
+        title="Giving"
+        description="Am I actually sending the money I'm allocating? Do I have the receipts?"
+        buttonAction={() => setAddOpen(true)}
+        buttonText="Log Donation"
+      />
 
       <GivingLog
         donations={donations}

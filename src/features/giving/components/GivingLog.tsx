@@ -18,7 +18,7 @@ export function GivingLog({ donations, ytdTotal, onEdit }: GivingLogProps) {
   return (
     <Card title="YTD Giving Log">
       {donations.length === 0 ? (
-        <Typography variant="muted" className="py-4 text-center">No donations logged yet.</Typography>
+        <Typography variant="muted" className="py-4 text-center w-full">No donations logged yet.</Typography>
       ) : (
         <>
           <Table>

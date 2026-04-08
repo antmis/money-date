@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Quarter } from '@/shared/types'
 import type { JournalEntry } from '../types'
+import { supabase } from '@/lib/supabase'
+import { useWorkspace } from '@/features/workspace'
+import { toast } from 'sonner'
 
 type AnswerKey = keyof JournalEntry['answers']
 
@@ -32,88 +35,96 @@ const PROMPTS = [
   },
 ]
 
-function storageKey(year: number, quarter: Quarter) {
-  return `journal-${year}-${quarter}`
-}
-
-function loadEntry(year: number, quarter: Quarter): JournalEntry {
-  try {
-    const stored = localStorage.getItem(storageKey(year, quarter))
-    if (stored) return JSON.parse(stored) as JournalEntry
-  } catch {
-    // ignore
-  }
+function emptyEntry(year: number, quarter: Quarter): JournalEntry {
   return {
     quarter,
     year,
-    answers: {
-      feeling: '',
-      alignment: '',
-      drift: '',
-      patterns: '',
-      avoidance: '',
-    },
+    answers: { feeling: '', alignment: '', drift: '', patterns: '', avoidance: '' },
   }
 }
 
 export function useJournal(year: number, quarter: Quarter) {
-  const [entry, setEntry] = useState<JournalEntry>(() => loadEntry(year, quarter))
-  const [currentStep, setCurrentStep] = useState(0) // 0-4 = prompts, 5 = summary
+  const { activeBusiness } = useWorkspace()
+  const [entry, setEntry] = useState<JournalEntry>(() => emptyEntry(year, quarter))
+  const [loading, setLoading] = useState(true)
+  const [currentStep, setCurrentStep] = useState(0)
   const [savedIndicator, setSavedIndicator] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  useEffect(() => {
+    if (!activeBusiness) return
+
+    setLoading(true)
+    supabase
+      .from('journal_entries')
+      .select('answers, completed_at')
+      .eq('business_id', activeBusiness.id)
+      .eq('year', year)
+      .eq('quarter', quarter)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) { toast.error('Failed to load journal'); setLoading(false); return }
+        if (data) {
+          setEntry({
+            quarter,
+            year,
+            completedAt: (data.completed_at as string) ?? undefined,
+            answers: (data.answers as JournalEntry['answers']) ?? emptyEntry(year, quarter).answers,
+          })
+        } else {
+          setEntry(emptyEntry(year, quarter))
+        }
+        setLoading(false)
+      })
+  }, [activeBusiness?.id, year, quarter])
+
   const save = useCallback(
-    (updated: JournalEntry) => {
-      localStorage.setItem(storageKey(year, quarter), JSON.stringify(updated))
+    async (updated: JournalEntry) => {
+      if (!activeBusiness) return
+      const { error } = await supabase.from('journal_entries').upsert({
+        business_id: activeBusiness.id,
+        year: updated.year,
+        quarter: updated.quarter,
+        answers: updated.answers,
+        completed_at: updated.completedAt ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      if (error) { toast.error('Failed to save journal'); return }
       setSavedIndicator(true)
       setTimeout(() => setSavedIndicator(false), 2000)
     },
-    [year, quarter]
+    [activeBusiness]
   )
 
   function updateAnswer(field: AnswerKey, value: string) {
-    const updated = {
-      ...entry,
-      answers: { ...entry.answers, [field]: value },
-    }
+    const updated = { ...entry, answers: { ...entry.answers, [field]: value } }
     setEntry(updated)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => save(updated), 500)
+    debounceRef.current = setTimeout(() => void save(updated), 500)
   }
 
-  function goNext() {
-    setCurrentStep((s) => Math.min(s + 1, 5))
-  }
-
-  function goBack() {
-    setCurrentStep((s) => Math.max(s - 1, 0))
-  }
+  function goNext() { setCurrentStep(s => Math.min(s + 1, 5)) }
+  function goBack() { setCurrentStep(s => Math.max(s - 1, 0)) }
 
   function complete() {
     const updated = { ...entry, completedAt: new Date().toISOString() }
     setEntry(updated)
-    save(updated)
+    void save(updated)
     setCurrentStep(5)
   }
 
   function reset() {
-    const fresh: JournalEntry = {
-      quarter,
-      year,
-      answers: { feeling: '', alignment: '', drift: '', patterns: '', avoidance: '' },
-    }
+    const fresh = emptyEntry(year, quarter)
     setEntry(fresh)
-    localStorage.removeItem(storageKey(year, quarter))
+    void save(fresh)
     setCurrentStep(0)
   }
 
-  const isComplete = Boolean(entry.completedAt)
-
   useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [])
+
+  const isComplete = Boolean(entry.completedAt)
 
   return {
     entry,
@@ -127,5 +138,6 @@ export function useJournal(year: number, quarter: Quarter) {
     isComplete,
     savedIndicator,
     prompts: PROMPTS,
+    loading,
   }
 }

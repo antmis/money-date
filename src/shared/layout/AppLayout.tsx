@@ -1,8 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTheme } from 'next-themes'
-import { Sun, Moon, BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame } from 'lucide-react'
+import { Sun, Moon, BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame, LogOut } from 'lucide-react'
 import { Button, Typography, XStack } from '@/ui'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/features/auth'
 
 const navItems = [
   { to: '/', label: 'Runway', icon: Flame },
@@ -30,13 +31,25 @@ function ThemeToggle() {
   )
 }
 
+function SignOutButton() {
+  const { signOut } = useAuth()
+  return (
+    <Button variant="ghost" size="icon" onClick={() => void signOut()} aria-label="Sign out">
+      <LogOut className="h-4 w-4" />
+    </Button>
+  )
+}
+
 export function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background sticky top-0 z-50">
         <XStack className="max-w-5xl mx-auto px-6 items-center justify-between h-14">
           <Typography variant="brand">money date</Typography>
-          <ThemeToggle />
+          <XStack gap={1} className="items-center">
+            <ThemeToggle />
+            <SignOutButton />
+          </XStack>
         </XStack>
         <nav className="max-w-5xl mx-auto px-6 overflow-x-auto">
           <XStack gap={1}>

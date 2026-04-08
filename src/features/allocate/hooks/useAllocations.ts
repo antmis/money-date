@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import type { AllocationRates } from '../types'
 import { DEFAULT_TAX_RATE, DEFAULT_SEP_RATE, DEFAULT_GIVING_RATE } from '../utils/calculations'
-
-const STORAGE_KEY = 'money-date-allocation-rates'
+import { supabase } from '@/lib/supabase'
+import { useWorkspace } from '@/features/workspace'
+import { toast } from 'sonner'
 
 const defaultRates: AllocationRates = {
   taxReserve: DEFAULT_TAX_RATE * 100,
@@ -10,29 +11,47 @@ const defaultRates: AllocationRates = {
   giving: DEFAULT_GIVING_RATE * 100,
 }
 
-function loadRates(): AllocationRates {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      const parsed = JSON.parse(stored) as AllocationRates & { goals?: number }
-      const { goals: _goals, ...clean } = parsed as typeof parsed & { goals?: number }
-      void _goals
-      return clean as AllocationRates
-    }
-  } catch { /* ignore */ }
-  return defaultRates
-}
-
 export function useAllocations() {
-  const [rates, setRatesState] = useState<AllocationRates>(loadRates)
+  const { activeBusiness } = useWorkspace()
+  const [rates, setRatesState] = useState<AllocationRates>(defaultRates)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rates))
-  }, [rates])
+    if (!activeBusiness) return
 
-  function setRates(next: AllocationRates) {
+    setLoading(true)
+    supabase
+      .from('allocation_rates')
+      .select('tax_reserve, sep_ira, giving')
+      .eq('business_id', activeBusiness.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) { toast.error('Failed to load allocation rates'); setLoading(false); return }
+        if (data) {
+          setRatesState({
+            taxReserve: Number(data.tax_reserve),
+            sepIra: Number(data.sep_ira),
+            giving: Number(data.giving),
+          })
+        } else {
+          setRatesState(defaultRates)
+        }
+        setLoading(false)
+      })
+  }, [activeBusiness?.id])
+
+  async function setRates(next: AllocationRates) {
     setRatesState(next)
+    if (!activeBusiness) return
+    const { error } = await supabase.from('allocation_rates').upsert({
+      business_id: activeBusiness.id,
+      tax_reserve: next.taxReserve,
+      sep_ira: next.sepIra,
+      giving: next.giving,
+      updated_at: new Date().toISOString(),
+    })
+    if (error) toast.error('Failed to save allocation rates')
   }
 
-  return { rates, setRates }
+  return { rates, setRates, loading }
 }

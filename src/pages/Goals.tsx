@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { GoalCard, useGoals } from '@/features/goals'
-import { Button, Dialog, Grid, Input, Label, Separator, Typography, Field, XStack, YStack } from '@/ui'
+import { Button, Dialog, Grid, Input, Label, Separator, Typography, Field, XStack, YStack, Card } from '@/ui'
+import { PageSkeleton } from '@/shared/components'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -12,9 +12,11 @@ function fmt(n: number) {
 const BLANK = { name: '', targetAmount: 0, currentAmount: 0, quarterlyContribution: 0 }
 
 export function Goals() {
-  const { goals, totalGoalsPerQ, addGoal, updateGoal, deleteGoal } = useGoals()
+  const { goals, totalGoalsPerQ, addGoal, updateGoal, deleteGoal, loading } = useGoals()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [draft, setDraft] = useState({ ...BLANK })
+
+  if (loading) return <PageSkeleton />
 
   function handleAdd() {
     if (!draft.name.trim()) return
@@ -30,21 +32,19 @@ export function Goals() {
 
   return (
     <PageContainer>
-      <XStack justify="between">
-        <SectionHeader
-          title="Goals"
-          description="Quarterly savings targets — these set the Goals line in Allocate."
-        />
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="h-4 w-4 sm:mr-1.5" />
-          <span className="hidden sm:inline">Add Goal</span>
-        </Button>
-      </XStack>
+      <SectionHeader
+        title="Goals"
+        description="Quarterly savings targets — these set the Goals line in Allocate."
+        buttonAction={() => setDialogOpen(true)}
+        buttonText="Add Goal"
+      />
 
       {goals.length === 0 && (
-        <Typography variant="muted" className="py-8 text-center">
-          No goals yet. Click "+ Add Goal" to get started.
-        </Typography>
+        <Card>
+          <Typography variant="muted" className="py-4 text-center">
+            No goals yet. Click "+ Add Goal" to get started.
+          </Typography>
+        </Card>
       )}
 
       {goals.map((goal) => (

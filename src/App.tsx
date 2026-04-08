@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/ui'
 import { AppLayout } from '@/shared/layout'
+import { AuthProvider, LoginPage, RequireAuth } from '@/features/auth'
+import { WorkspaceProvider, RequireWorkspace } from '@/features/workspace'
 import { Runway } from '@/pages/Runway'
 import { Quarter } from '@/pages/Quarter'
 import { Allocate } from '@/pages/Allocate'
@@ -15,18 +17,29 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/" element={<Runway />} />
-            <Route path="/quarter" element={<Quarter />} />
-            <Route path="/allocate" element={<Allocate />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/giving" element={<Giving />} />
-            <Route path="/reimbursements" element={<Reimbursements />} />
-            <Route path="/biz-activity" element={<BusinessActivity />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <WorkspaceProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route element={
+                <RequireAuth>
+                  <RequireWorkspace>
+                    <AppLayout />
+                  </RequireWorkspace>
+                </RequireAuth>
+              }>
+                <Route path="/" element={<Runway />} />
+                <Route path="/quarter" element={<Quarter />} />
+                <Route path="/allocate" element={<Allocate />} />
+                <Route path="/goals" element={<Goals />} />
+                <Route path="/giving" element={<Giving />} />
+                <Route path="/reimbursements" element={<Reimbursements />} />
+                <Route path="/biz-activity" element={<BusinessActivity />} />
+                <Route path="/journal" element={<Journal />} />
+              </Route>
+            </Routes>
+          </WorkspaceProvider>
+        </AuthProvider>
       </BrowserRouter>
       <Toaster />
     </ThemeProvider>

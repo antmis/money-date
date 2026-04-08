@@ -1,5 +1,5 @@
 import { PageContainer } from '@/shared/layout'
-import { SectionHeader } from '@/shared/components'
+import { SectionHeader, PageSkeleton } from '@/shared/components'
 import { JournalProgress, JournalPrompt, JournalNav, JournalSummary, useJournal } from '@/features/journal'
 import { YStack } from '@/ui'
 import type { Quarter } from '@/shared/types'
@@ -19,7 +19,10 @@ export function Journal() {
     complete,
     reset,
     prompts,
+    loading,
   } = useJournal(currentYear, currentQuarter)
+
+  if (loading) return <PageSkeleton />
 
   const isSummary = currentStep >= prompts.length
 

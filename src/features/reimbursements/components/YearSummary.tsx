@@ -15,15 +15,24 @@ const YEAR_OPTIONS = ['2025', '2026']
 interface YearSummaryProps {
   year: number
   currentMonth: number
-  getMonthData: (year: number, month: number) => MonthlyReimbursement
+  yearData: MonthlyReimbursement[]
   onEdit: (year: number, month: number) => void
   onYearChange: (year: number) => void
 }
 
-export function YearSummary({ year, currentMonth, getMonthData, onEdit, onYearChange }: YearSummaryProps) {
+function emptyMonth(year: number, month: number): MonthlyReimbursement {
+  return {
+    year, month, offices: [], businessMiles: 0,
+    phoneInternet: { internet: 0, phone: 0 },
+    healthInsurance: { health: 0, dental: 0, vision: 0 },
+    paid: false, paymentMethod: '', paidDate: '',
+  }
+}
+
+export function YearSummary({ year, currentMonth, yearData, onEdit, onYearChange }: YearSummaryProps) {
   const months = Array.from({ length: 12 }, (_, i) => {
     const m = i + 1
-    const data = getMonthData(year, m)
+    const data = yearData.find(r => r.year === year && r.month === m) ?? emptyMonth(year, m)
     const officesTotal = data.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
     return {
       month: m,

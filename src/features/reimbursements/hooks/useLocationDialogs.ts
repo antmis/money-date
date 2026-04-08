@@ -12,7 +12,7 @@ const emptyForm = (): LocationForm => ({ name: '', address: '', officeSqft: '', 
 
 interface UseLocationDialogsOptions {
   offices: OfficeMonthlyData[]
-  addTemplate: (data: Omit<OfficeTemplate, 'id'>) => OfficeTemplate
+  addTemplate: (data: Omit<OfficeTemplate, 'id'>) => Promise<OfficeTemplate>
   addOfficeToMonth: (template: OfficeTemplate) => void
   updateTemplate: (id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) => void
   updateOfficeMetadata: (index: number, changes: Partial<OfficeMonthlyData>) => void
@@ -48,8 +48,8 @@ export function useLocationDialogs({
     setForm(emptyForm())
   }
 
-  function handleAddLocation() {
-    const template = addTemplate({
+  async function handleAddLocation() {
+    const template = await addTemplate({
       name: form.name.trim(),
       address: form.address.trim(),
       officeSqft: Number(form.officeSqft) || 0,

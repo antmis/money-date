@@ -1,5 +1,5 @@
 import { PageContainer } from '@/shared/layout'
-import { SectionHeader, StatCard } from '@/shared/components'
+import { SectionHeader, StatCard, PageSkeleton } from '@/shared/components'
 import { CashBalanceCards, RunwayStatus, useRunway } from '@/features/runway'
 import { Grid, YStack } from '@/ui'
 
@@ -22,7 +22,10 @@ export function Runway() {
     status,
     buffer3mo,
     buffer6mo,
+    loading,
   } = useRunway()
+
+  if (loading) return <PageSkeleton />
 
   const statusVariant = status === 'healthy' ? 'success' : status === 'lean' ? 'warning' : 'danger'
 

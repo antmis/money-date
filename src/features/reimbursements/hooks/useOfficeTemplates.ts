@@ -1,79 +1,112 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { HealthInsuranceTemplate, OfficeTemplate } from '../types'
-
-const TEMPLATES_KEY = 'reimbursement-office-templates'
-const HEALTH_KEY = 'reimbursement-health-template'
-
-function loadTemplates(): OfficeTemplate[] {
-  try {
-    const stored = localStorage.getItem(TEMPLATES_KEY)
-    if (stored) return JSON.parse(stored) as OfficeTemplate[]
-  } catch {
-    // ignore
-  }
-  return []
-}
-
-function saveTemplates(templates: OfficeTemplate[]) {
-  try {
-    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates))
-  } catch {
-    // ignore
-  }
-}
-
-function loadHealthTemplate(): HealthInsuranceTemplate {
-  try {
-    const stored = localStorage.getItem(HEALTH_KEY)
-    if (stored) return JSON.parse(stored) as HealthInsuranceTemplate
-  } catch {
-    // ignore
-  }
-  return { health: 0, dental: 0, vision: 0 }
-}
-
-function saveHealthTemplate(template: HealthInsuranceTemplate) {
-  try {
-    localStorage.setItem(HEALTH_KEY, JSON.stringify(template))
-  } catch {
-    // ignore
-  }
-}
+import { supabase } from '@/lib/supabase'
+import { useWorkspace } from '@/features/workspace'
+import { toast } from 'sonner'
 
 export function useOfficeTemplates() {
-  const [templates, setTemplates] = useState<OfficeTemplate[]>(loadTemplates)
+  const { activeBusiness } = useWorkspace()
+  const [templates, setTemplates] = useState<OfficeTemplate[]>([])
+  const [loading, setLoading] = useState(true)
 
-  function addTemplate(data: Omit<OfficeTemplate, 'id'>): OfficeTemplate {
-    const template: OfficeTemplate = { ...data, id: crypto.randomUUID() }
-    const next = [...templates, template]
-    setTemplates(next)
-    saveTemplates(next)
+  useEffect(() => {
+    if (!activeBusiness) return
+
+    setLoading(true)
+    supabase
+      .from('office_locations')
+      .select('id, name, address, office_sqft, total_sqft')
+      .eq('business_id', activeBusiness.id)
+      .order('created_at', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) { toast.error('Failed to load office locations'); setLoading(false); return }
+        setTemplates((data ?? []).map(r => ({
+          id: r.id as string,
+          name: r.name as string,
+          address: r.address as string,
+          officeSqft: Number(r.office_sqft),
+          totalSqft: Number(r.total_sqft),
+        })))
+        setLoading(false)
+      })
+  }, [activeBusiness?.id])
+
+  async function addTemplate(data: Omit<OfficeTemplate, 'id'>): Promise<OfficeTemplate> {
+    const id = crypto.randomUUID()
+    const template: OfficeTemplate = { ...data, id }
+    setTemplates(prev => [...prev, template])
+    if (activeBusiness) {
+      const { error } = await supabase.from('office_locations').insert({
+        id,
+        business_id: activeBusiness.id,
+        name: data.name,
+        address: data.address,
+        office_sqft: data.officeSqft,
+        total_sqft: data.totalSqft,
+      })
+      if (error) { setTemplates(prev => prev.filter(t => t.id !== id)); toast.error('Failed to save office location') }
+    }
     return template
   }
 
-  function updateTemplate(id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) {
-    const next = templates.map(t => t.id === id ? { ...t, ...changes } : t)
-    setTemplates(next)
-    saveTemplates(next)
+  async function updateTemplate(id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) {
+    setTemplates(prev => prev.map(t => t.id === id ? { ...t, ...changes } : t))
+    if (!activeBusiness) return
+    const { error } = await supabase.from('office_locations').update({
+      ...(changes.name !== undefined && { name: changes.name }),
+      ...(changes.address !== undefined && { address: changes.address }),
+      ...(changes.officeSqft !== undefined && { office_sqft: changes.officeSqft }),
+      ...(changes.totalSqft !== undefined && { total_sqft: changes.totalSqft }),
+    }).eq('id', id).eq('business_id', activeBusiness.id)
+    if (error) toast.error('Failed to update office location')
   }
 
-  function deleteTemplate(id: string) {
-    const next = templates.filter(t => t.id !== id)
-    setTemplates(next)
-    saveTemplates(next)
+  async function deleteTemplate(id: string) {
+    setTemplates(prev => prev.filter(t => t.id !== id))
+    if (!activeBusiness) return
+    const { error } = await supabase.from('office_locations').delete().eq('id', id).eq('business_id', activeBusiness.id)
+    if (error) toast.error('Failed to delete office location')
   }
 
-  return { templates, addTemplate, updateTemplate, deleteTemplate }
+  return { templates, addTemplate, updateTemplate, deleteTemplate, loading }
 }
 
 export function useHealthTemplate() {
-  const [template, setTemplate] = useState<HealthInsuranceTemplate>(loadHealthTemplate)
+  const { activeBusiness } = useWorkspace()
+  const [template, setTemplateState] = useState<HealthInsuranceTemplate>({ health: 0, dental: 0, vision: 0 })
+  const [loading, setLoading] = useState(true)
 
-  function updateTemplate(changes: Partial<HealthInsuranceTemplate>) {
+  useEffect(() => {
+    if (!activeBusiness) return
+
+    setLoading(true)
+    supabase
+      .from('health_insurance_config')
+      .select('health, dental, vision')
+      .eq('business_id', activeBusiness.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) { toast.error('Failed to load health insurance config'); setLoading(false); return }
+        if (data) {
+          setTemplateState({ health: Number(data.health), dental: Number(data.dental), vision: Number(data.vision) })
+        }
+        setLoading(false)
+      })
+  }, [activeBusiness?.id])
+
+  async function updateTemplate(changes: Partial<HealthInsuranceTemplate>) {
     const next = { ...template, ...changes }
-    setTemplate(next)
-    saveHealthTemplate(next)
+    setTemplateState(next)
+    if (!activeBusiness) return
+    const { error } = await supabase.from('health_insurance_config').upsert({
+      business_id: activeBusiness.id,
+      health: next.health,
+      dental: next.dental,
+      vision: next.vision,
+      updated_at: new Date().toISOString(),
+    })
+    if (error) toast.error('Failed to save health insurance config')
   }
 
-  return { template, updateTemplate }
+  return { template, updateTemplate, loading }
 }
