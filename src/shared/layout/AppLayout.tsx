@@ -25,7 +25,7 @@ export function AppLayout() {
           <UserMenu />
         </XStack>
         <nav className="max-w-5xl mx-auto px-6 overflow-x-auto">
-          <XStack gap={1}>
+          <XStack gap={1} className="navbar-container">
             {navItems.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
