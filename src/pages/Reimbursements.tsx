@@ -59,7 +59,7 @@ export function Reimbursements() {
           description="Monthly business expense reimbursement — transfer from business checking to personal."
         />
         <Button onClick={() => openForMonth(now.getFullYear(), now.getMonth() + 1)}>
-          <Plus /> New Reimbursement
+          <Plus /><span className="hidden sm:inline">New Reimbursement</span>
         </Button>
       </XStack>
 

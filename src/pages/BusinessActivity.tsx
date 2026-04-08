@@ -21,8 +21,7 @@ export function BusinessActivity() {
           description="Business transactions recorded through personal accounts — expenses and income to reconcile with Xero."
         />
         <Button onClick={() => setAddOpen(true)}>
-          <Plus />
-          Add Entry
+          <Plus /><span className="hidden sm:inline">Add Entry</span>
         </Button>
       </XStack>
 

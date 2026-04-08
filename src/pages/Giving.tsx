@@ -20,8 +20,8 @@ export function Giving() {
           description="Am I actually sending the money I'm allocating? Do I have the receipts?"
         />
         <Button onClick={() => setAddOpen(true)}>
-          <Plus className="h-4 w-4 mr-1.5" />
-          Log Donation
+          <Plus className="h-4 w-4 sm:mr-1.5" />
+          <span className="hidden sm:inline">Log Donation</span>
         </Button>
       </XStack>
 

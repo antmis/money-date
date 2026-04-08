@@ -36,8 +36,8 @@ export function Goals() {
           description="Quarterly savings targets — these set the Goals line in Allocate."
         />
         <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-1.5" />
-          Add Goal
+          <Plus className="h-4 w-4 sm:mr-1.5" />
+          <span className="hidden sm:inline">Add Goal</span>
         </Button>
       </XStack>
 
