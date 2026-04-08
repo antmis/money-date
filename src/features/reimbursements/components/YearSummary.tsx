@@ -87,9 +87,9 @@ export function YearSummary({ year, currentMonth, yearData, onEdit, onYearChange
                 <TableCell className="text-right tabular-nums font-medium">{total > 0 ? `$${total.toFixed(2)}` : '—'}</TableCell>
                 <TableCell className="text-right">
                   {data.paid
-                    ? <Badge variant="outline" className="text-xs text-green-600 border-green-600">Paid</Badge>
+                    ? <Badge >Paid</Badge>
                     : total > 0
-                      ? <Badge variant="outline" className="text-xs text-amber-500 border-amber-500">Due</Badge>
+                      ? <Badge variant="destructive">Due</Badge>
                       : null}
                 </TableCell>
               </TableRow>

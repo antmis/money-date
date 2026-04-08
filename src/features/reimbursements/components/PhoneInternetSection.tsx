@@ -1,33 +1,15 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { Card, Button, ListItem, Typography, YStack } from '@/ui'
+import { Card, ListItem, Typography } from '@/ui'
 import type { PhoneInternetExpenses } from '../types'
 import { calcPhoneInternetReimbursement, PHONE_INTERNET_RATE } from '../utils/calculations'
 import { ReimbursementField } from './ReimbursementField'
-import { Spinner } from '@/ui/spinner'
 
 interface PhoneInternetSectionProps {
   expenses: PhoneInternetExpenses
   onChange: (field: keyof PhoneInternetExpenses, value: number) => void
-  onSave?: () => Promise<void>
 }
 
-export function PhoneInternetSection({ expenses, onChange, onSave }: PhoneInternetSectionProps) {
-  const [isSaving, setIsSaving] = useState(false)
+export function PhoneInternetSection({ expenses, onChange }: PhoneInternetSectionProps) {
   const total = calcPhoneInternetReimbursement(expenses)
-
-  async function handleSave() {
-    if (!onSave) return
-    setIsSaving(true)
-    try {
-      await onSave()
-      toast('Reimbursement saved')
-    } catch {
-      toast.error('Failed to save')
-    } finally {
-      setIsSaving(false)
-    }
-  }
 
   return (
     <Card
@@ -35,14 +17,7 @@ export function PhoneInternetSection({ expenses, onChange, onSave }: PhoneIntern
       headerExtra={
         <Typography variant="small" as="span">{(PHONE_INTERNET_RATE * 100).toFixed(0)}% business usage</Typography>
       }
-      footer={
-        <YStack>
-          <ListItem title="Phone & Internet Total" lineItem={`$${total.toFixed(2)}`} />
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <Spinner /> : "Save Reimbursement"}
-          </Button>
-        </YStack>
-      }
+      footer={<ListItem title="Phone & Internet Total" lineItem={`$${total.toFixed(2)}`} />}
     >
       <ReimbursementField
         id="internet-cost"

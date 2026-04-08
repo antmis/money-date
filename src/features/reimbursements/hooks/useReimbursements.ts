@@ -85,7 +85,7 @@ export function useReimbursements() {
         empty.businessMiles = prev.businessMiles
         empty.phoneInternet = { ...prev.phoneInternet }
         empty.healthInsurance = { ...prev.healthInsurance }
-        empty.offices = prev.offices.map(o => ({ ...o, alarm: 0, cleaning: 0, rent: 0, rentInsurance: 0, utilities: 0 }))
+        empty.offices = prev.offices.map(o => ({ ...o }))
       }
       setData(empty)
     }
@@ -134,48 +134,40 @@ export function useReimbursements() {
       totalSqft: template.totalSqft,
       alarm: 0, cleaning: 0, rent: 0, rentInsurance: 0, utilities: 0,
     }
-    const updated = { ...data, offices: [...data.offices, newOffice] }
-    setData(updated)
-    void persist(updated)
+    setData(prev => ({ ...prev, offices: [...prev.offices, newOffice] }))
   }
 
   function updateOffice(index: number, field: keyof OfficeMonthlyData, value: number | string) {
-    const offices = data.offices.map((o, i) => i === index ? { ...o, [field]: value } : o)
-    const updated = { ...data, offices }
-    setData(updated)
-    void persist(updated)
+    setData(prev => {
+      const offices = prev.offices.map((o, i) => i === index ? { ...o, [field]: value } : o)
+      return { ...prev, offices }
+    })
   }
 
   function updateOfficeMetadata(index: number, changes: Partial<OfficeMonthlyData>) {
-    const offices = data.offices.map((o, i) => i === index ? { ...o, ...changes } : o)
-    const updated = { ...data, offices }
-    setData(updated)
-    void persist(updated)
+    setData(prev => {
+      const offices = prev.offices.map((o, i) => i === index ? { ...o, ...changes } : o)
+      return { ...prev, offices }
+    })
   }
 
   function removeOfficeFromMonth(index: number) {
-    const offices = data.offices.filter((_, i) => i !== index)
-    const updated = { ...data, offices }
-    setData(updated)
-    void persist(updated)
+    setData(prev => {
+      const offices = prev.offices.filter((_, i) => i !== index)
+      return { ...prev, offices }
+    })
   }
 
   function updateMiles(miles: number) {
-    const updated = { ...data, businessMiles: miles }
-    setData(updated)
-    void persist(updated)
+    setData(prev => ({ ...prev, businessMiles: miles }))
   }
 
   function updatePhoneInternet(field: keyof PhoneInternetExpenses, value: number) {
-    const updated = { ...data, phoneInternet: { ...data.phoneInternet, [field]: value } }
-    setData(updated)
-    void persist(updated)
+    setData(prev => ({ ...prev, phoneInternet: { ...prev.phoneInternet, [field]: value } }))
   }
 
   function updateHealthInsurance(field: keyof HealthInsuranceExpenses, value: number) {
-    const updated = { ...data, healthInsurance: { ...data.healthInsurance, [field]: value } }
-    setData(updated)
-    void persist(updated)
+    setData(prev => ({ ...prev, healthInsurance: { ...prev.healthInsurance, [field]: value } }))
   }
 
   function markPaid(paymentMethod: string, paidDate: string) {

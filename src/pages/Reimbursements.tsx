@@ -4,6 +4,8 @@ import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { Button, Dialog, XStack, YStack, Card } from '@/ui'
 import { PageSkeleton } from '@/shared/components'
+import { Spinner } from '@/ui/spinner'
+import { toast } from 'sonner'
 import {
   MonthSelector,
   OfficeLocationSection,
@@ -26,6 +28,7 @@ const MONTH_NAMES = [
 
 export function Reimbursements() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const {
     data, year, month, yearData, loading,
@@ -54,6 +57,19 @@ export function Reimbursements() {
     setDialogOpen(true)
   }
 
+  async function handleSave() {
+    setIsSaving(true)
+    try {
+      await save()
+      toast('Reimbursement saved')
+      setDialogOpen(false)
+    } catch {
+      toast.error('Failed to save')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   return (
     <PageContainer>
       <SectionHeader
@@ -77,7 +93,14 @@ export function Reimbursements() {
         onOpenChange={setDialogOpen}
         title={`${MONTH_NAMES[month - 1]} ${year}`}
         className="max-w-2xl max-h-[90dvh] overflow-y-auto"
-        footer={<Button onClick={() => setDialogOpen(false)}>Done</Button>}
+        footer={
+          <XStack justify="end" gap={2}>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? <Spinner /> : 'Save'}
+            </Button>
+          </XStack>
+        }
       >
         <YStack gap={8}>
           <MonthSelector year={year} month={month} onChange={switchMonth} />
@@ -98,7 +121,6 @@ export function Reimbursements() {
               onChange={(field, value) => updateOffice(i, field, value)}
               onEdit={() => location.openEdit(i)}
               onDelete={() => location.openDelete(i)}
-              onSave={save}
             />
           ))}
 
@@ -111,12 +133,11 @@ export function Reimbursements() {
             </XStack>
           )}
 
-          <MileageSection miles={data.businessMiles} onChange={updateMiles} onSave={save} />
-          <PhoneInternetSection expenses={data.phoneInternet} onChange={updatePhoneInternet} onSave={save} />
+          <MileageSection miles={data.businessMiles} onChange={updateMiles} />
+          <PhoneInternetSection expenses={data.phoneInternet} onChange={updatePhoneInternet} />
           <HealthInsuranceSection
             health={data.healthInsurance}
             onChange={(field: keyof HealthInsuranceExpenses, value: number) => updateHealthInsurance(field, value)}
-            onSave={save}
           />
           <ReimbursementSummary data={data} onMarkPaid={markPaid} onMarkUnpaid={markUnpaid} />
         </YStack>

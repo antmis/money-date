@@ -1,51 +1,26 @@
-import { useState } from 'react'
 import { Pencil } from 'lucide-react'
-import { toast } from 'sonner'
 import { Card, Button, ListItem, Typography, YStack, XStack } from '@/ui'
 import type { OfficeMonthlyData } from '../types'
 import { calcOfficeRate, calcOfficeReimbursement } from '../utils/calculations'
 import { ReimbursementField } from './ReimbursementField'
-import { Spinner } from '@/ui/spinner'
 
 interface OfficeLocationSectionProps {
   office: OfficeMonthlyData
   onChange: (field: keyof OfficeMonthlyData, value: number | string) => void
   onEdit?: () => void
   onDelete?: () => void
-  onSave?: () => Promise<void>
 }
 
-export function OfficeLocationSection({ office, onChange, onEdit, onSave }: OfficeLocationSectionProps) {
-  const [isSaving, setIsSaving] = useState(false)
+export function OfficeLocationSection({ office, onChange, onEdit }: OfficeLocationSectionProps) {
   const rate = calcOfficeRate(office)
   const total = calcOfficeReimbursement(office)
   const ratePct = (rate * 100).toFixed(1)
   const slug = office.templateId
   const hasLocation = office.address || office.officeSqft > 0 || office.totalSqft > 0
 
-  async function handleSave() {
-    if (!onSave) return
-    setIsSaving(true)
-    try {
-      await onSave()
-      toast('Reimbursement saved')
-    } catch {
-      toast.error('Failed to save')
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
   return (
     <Card
-      footer={
-        <YStack>
-          <ListItem title={`${office.name} Total`} lineItem={`$${total.toFixed(2)}`} />
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <Spinner /> : "Save Reimbursement"}
-          </Button>
-        </YStack>
-      }
+      footer={<ListItem title={`${office.name} Total`} lineItem={`$${total.toFixed(2)}`} />}
     >
       <YStack>
         {hasLocation && (
