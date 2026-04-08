@@ -66,7 +66,7 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
                     className="flex w-full justify-start gap-2"
                     variant="outline"
                   >
-                    <CalendarIcon className="size-4" />
+                    <CalendarIcon />
                     {paidDate
                       ? new Date(paidDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                       : 'Pick a date'}
@@ -87,7 +87,7 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
               </Popover>
             </Field>
           </XStack>
-          <Button size="sm" onClick={handleMarkPaid} disabled={grandTotal === 0}>
+          <Button onClick={handleMarkPaid} disabled={grandTotal === 0}>
             Mark as paid
           </Button>
         </YStack>

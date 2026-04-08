@@ -9,9 +9,10 @@ function fmt(n: number) {
 interface GivingLogProps {
   donations: Donation[]
   ytdTotal: number
+  onEdit: (donation: Donation) => void
 }
 
-export function GivingLog({ donations, ytdTotal }: GivingLogProps) {
+export function GivingLog({ donations, ytdTotal, onEdit }: GivingLogProps) {
   const receiptCount = donations.filter((d) => d.receiptName).length
 
   return (
@@ -31,7 +32,7 @@ export function GivingLog({ donations, ytdTotal }: GivingLogProps) {
             </TableHeader>
             <TableBody>
               {donations.map((d) => (
-                <TableRow key={d.id}>
+                <TableRow key={d.id} className="cursor-pointer" onClick={() => onEdit(d)}>
                   <TableCell>{d.date}</TableCell>
                   <TableCell>{d.organization}</TableCell>
                   <TableCell className="text-right tabular-nums">{fmt(d.amount)}</TableCell>

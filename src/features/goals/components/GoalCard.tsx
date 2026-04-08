@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Button, ButtonGroup, Card, Dialog, Field, Grid, Input, Label, ListItem, Progress, Typography, XStack, YStack } from '@/ui'
+import { Pencil } from 'lucide-react'
+import { Button, Card, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, ListItem, Progress, XStack, YStack, Typography } from '@/ui'
 import { calcQuartersToGoal, calcProgressPct } from '../utils/calculations'
 import type { Goal } from '../types'
-import { Trash2 } from 'lucide-react'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -15,9 +15,9 @@ interface GoalCardProps {
 }
 
 export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
-  const [editing, setEditing] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
   const [draft, setDraft] = useState({ ...goal })
-  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const pct = calcProgressPct(goal.currentAmount, goal.targetAmount)
   const quarters = calcQuartersToGoal(goal.targetAmount, goal.currentAmount, goal.quarterlyContribution)
@@ -30,65 +30,24 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
       currentAmount: draft.currentAmount,
       quarterlyContribution: draft.quarterlyContribution,
     })
-    setEditing(false)
+    setEditOpen(false)
   }
 
-  function handleCancel() {
-    setDraft({ ...goal })
-    setEditing(false)
-  }
-
-  if (editing) {
-    return (
-      <Card title={`Edit: ${goal.name}`}>
-        <Grid cols={2}>
-          <Field className="sm:col-span-2">
-            <Label htmlFor={`name-${goal.id}`}>Goal Name</Label>
-            <Input
-              id={`name-${goal.id}`}
-              value={draft.name}
-              onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-            />
-          </Field>
-          <Field>
-            <Label htmlFor={`target-${goal.id}`}>Target ($)</Label>
-            <Input
-              id={`target-${goal.id}`}
-              type="number"
-              value={draft.targetAmount || ''}
-              onChange={(e) => setDraft((d) => ({ ...d, targetAmount: Number(e.target.value) || 0 }))}
-            />
-          </Field>
-          <Field>
-            <Label htmlFor={`current-${goal.id}`}>Currently Saved ($)</Label>
-            <Input
-              id={`current-${goal.id}`}
-              type="number"
-              value={draft.currentAmount || ''}
-              onChange={(e) => setDraft((d) => ({ ...d, currentAmount: Number(e.target.value) || 0 }))}
-            />
-          </Field>
-          <Field>
-            <Label htmlFor={`contrib-${goal.id}`}>Quarterly Contribution ($)</Label>
-            <Input
-              id={`contrib-${goal.id}`}
-              type="number"
-              value={draft.quarterlyContribution || ''}
-              onChange={(e) => setDraft((d) => ({ ...d, quarterlyContribution: Number(e.target.value) || 0 }))}
-            />
-          </Field>
-        </Grid>
-        <ButtonGroup>
-          <Button size="sm" onClick={handleSave}>Save</Button>
-          <Button size="sm" variant="outline" onClick={handleCancel}>Cancel</Button>
-        </ButtonGroup>
-      </Card>
-    )
+  function handleOpenChange(open: boolean) {
+    if (!open) setDraft({ ...goal })
+    setEditOpen(open)
   }
 
   return (
     <>
-      <Card title={goal.name}>
+      <Card
+        title={goal.name}
+        headerExtra={
+          <Button variant="ghost" size="icon-sm" onClick={() => setEditOpen(true)} aria-label="Edit goal">
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+        }
+      >
         <Grid>
           <ListItem title="Target" subTitle={fmt(goal.targetAmount)} />
           <ListItem title="Saved" subTitle={fmt(goal.currentAmount)} />
@@ -104,24 +63,72 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
           </XStack>
           <Progress value={pct} className="h-2" />
         </YStack>
-
-        <ButtonGroup>
-          <Button size="sm" variant="outline" onClick={() => setEditing(true)}>Edit</Button>
-          <Button size="sm" variant="secondary" onClick={() => setConfirmingDelete(true)}><Trash2 /></Button>
-        </ButtonGroup>
       </Card>
 
       <Dialog
-        open={confirmingDelete}
-        onOpenChange={setConfirmingDelete}
-        title={`Delete "${goal.name}"?`}
-        description="This will permanently remove this goal and its progress. This cannot be undone."
+        open={editOpen}
+        onOpenChange={handleOpenChange}
+        title={`Edit: ${goal.name}`}
+        className="max-w-md"
         footer={
-          <ButtonGroup>
-            <Button variant="outline" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => { setConfirmingDelete(false); onDelete() }}>Delete</Button>
-          </ButtonGroup>
+          <XStack justify="between" className="w-full">
+            <Button variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</Button>
+            <XStack gap={2}>
+              <Button variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>
+              <Button onClick={handleSave} disabled={!draft.name.trim()}>Save</Button>
+            </XStack>
+          </XStack>
         }
+      >
+        <YStack gap={4}>
+          <Grid cols={2} className="gap-3">
+            <Field className="col-span-2">
+              <Label htmlFor={`name-${goal.id}`}>Goal Name</Label>
+              <Input
+                id={`name-${goal.id}`}
+                value={draft.name}
+                onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+              />
+            </Field>
+            <Field>
+              <Label htmlFor={`target-${goal.id}`}>Target ($)</Label>
+              <Input
+                id={`target-${goal.id}`}
+                type="number"
+                prefix="$"
+                value={draft.targetAmount || ''}
+                onChange={(e) => setDraft((d) => ({ ...d, targetAmount: Number(e.target.value) || 0 }))}
+              />
+            </Field>
+            <Field>
+              <Label htmlFor={`current-${goal.id}`}>Currently Saved ($)</Label>
+              <Input
+                id={`current-${goal.id}`}
+                type="number"
+                prefix="$"
+                value={draft.currentAmount || ''}
+                onChange={(e) => setDraft((d) => ({ ...d, currentAmount: Number(e.target.value) || 0 }))}
+              />
+            </Field>
+            <Field className="col-span-2">
+              <Label htmlFor={`contrib-${goal.id}`}>Quarterly Contribution ($)</Label>
+              <Input
+                id={`contrib-${goal.id}`}
+                type="number"
+                prefix="$"
+                value={draft.quarterlyContribution || ''}
+                onChange={(e) => setDraft((d) => ({ ...d, quarterlyContribution: Number(e.target.value) || 0 }))}
+              />
+            </Field>
+          </Grid>
+        </YStack>
+      </Dialog>
+
+      <ConfirmDeleteDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        onConfirm={() => { setEditOpen(false); onDelete() }}
+        description={`"${goal.name}" will be permanently deleted.`}
       />
     </>
   )

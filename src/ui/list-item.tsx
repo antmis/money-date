@@ -3,7 +3,7 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { XStack } from "./stack"
+import { XStack, YStack } from "./stack"
 
 // ─── ListGroup ────────────────────────────────────────────────────────────────
 
@@ -188,13 +188,15 @@ function ListItem({
       )}
       {hasConvenienceContent && (
         <ListItemContent>
-          {(title != null || lineItem != null) && (
-            <XStack gap={1} align="center">
-              {title != null && <ListItemTitle>{title}</ListItemTitle>}
-              {lineItem != null && <ListItemValue>{lineItem}</ListItemValue>}
-            </XStack>
-          )}
-          {subTitle != null && <ListItemSubtitle>{subTitle}</ListItemSubtitle>}
+          <XStack justify="between">
+            {(title != null || subTitle != null) && (
+              <YStack gap={1} className="flex-1">
+                {title != null && <ListItemTitle>{title}</ListItemTitle>}
+                {subTitle != null && <ListItemSubtitle>{subTitle}</ListItemSubtitle>}
+              </YStack>
+            )}
+            {lineItem != null && <ListItemValue>{lineItem}</ListItemValue>}
+          </XStack>
         </ListItemContent>
       )}
       {children}

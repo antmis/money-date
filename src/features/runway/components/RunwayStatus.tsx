@@ -1,4 +1,4 @@
-import { Card, Typography } from '@/ui'
+import { Card, Typography, XStack } from '@/ui'
 import { Badge } from '@/shared/components'
 
 type Status = 'healthy' | 'lean' | 'critical'
@@ -18,19 +18,15 @@ export function RunwayStatus({ status, months }: RunwayStatusProps) {
   const advisory = advisoryText[status]
   return (
     <Card>
-      <div className="flex items-start gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Badge status={status} />
-            <Typography variant="muted" as="span">
-              {months.toFixed(1)} months of runway
-            </Typography>
-          </div>
-          {advisory && (
-            <Typography variant="label" color="warning">{advisory}</Typography>
-          )}
-        </div>
-      </div>
+      <XStack gap={2}>
+        <Badge status={status} />
+        <Typography variant="muted" as="span">
+          {months.toFixed(1)} months of runway
+        </Typography>
+      </XStack>
+      {advisory && (
+        <Typography variant="label" color="warning">{advisory}</Typography>
+      )}
     </Card>
   )
 }

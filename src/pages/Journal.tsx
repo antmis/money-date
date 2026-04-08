@@ -1,7 +1,7 @@
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { JournalProgress, JournalPrompt, JournalNav, JournalSummary, useJournal } from '@/features/journal'
-import { Typography, YStack } from '@/ui'
+import { YStack } from '@/ui'
 import type { Quarter } from '@/shared/types'
 
 const currentYear = new Date().getFullYear()
@@ -18,7 +18,6 @@ export function Journal() {
     goBack,
     complete,
     reset,
-    savedIndicator,
     prompts,
   } = useJournal(currentYear, currentQuarter)
 
@@ -26,15 +25,10 @@ export function Journal() {
 
   return (
     <PageContainer>
-      <div className="flex items-start justify-between">
-        <SectionHeader
-          title="Journal"
-          description="How do I actually feel about money this quarter?"
-        />
-        {savedIndicator && (
-          <Typography variant="small" as="span" className="mt-1 animate-pulse">Saved</Typography>
-        )}
-      </div>
+      <SectionHeader
+        title="Journal"
+        description="How do I actually feel about money this quarter?"
+      />
 
       {isSummary ? (
         <JournalSummary entry={entry} onReset={reset} />

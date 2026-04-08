@@ -5,7 +5,11 @@ import { cn } from "@/lib/utils"
 type InputProps = React.ComponentProps<"input"> & { prefix?: string }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, prefix, ...props }, ref) => {
+  ({ className, type, prefix, onWheel, ...props }, ref) => {
+    const handleWheel = type === "number"
+      ? (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
+      : onWheel
+
     if (prefix) {
       return (
         <div className="relative">
@@ -20,6 +24,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className
             )}
             ref={ref}
+            onWheel={handleWheel}
             {...props}
           />
         </div>
@@ -33,6 +38,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
+        onWheel={handleWheel}
         {...props}
       />
     )

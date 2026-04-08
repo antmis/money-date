@@ -1,4 +1,4 @@
-import { Typography } from '@/ui'
+import { Typography, YStack } from '@/ui'
 
 interface SectionHeaderProps {
   title: string
@@ -7,9 +7,9 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, description }: SectionHeaderProps) {
   return (
-    <div className="space-y-1">
+    <YStack gap={1}>
       <Typography variant="heading">{title}</Typography>
       {description && <Typography variant="muted">{description}</Typography>}
-    </div>
+    </YStack>
   )
 }

@@ -9,6 +9,7 @@ import { Goals } from '@/pages/Goals'
 import { Giving } from '@/pages/Giving'
 import { Journal } from '@/pages/Journal'
 import { Reimbursements } from '@/pages/Reimbursements'
+import { BusinessActivity } from '@/pages/BusinessActivity'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/goals" element={<Goals />} />
             <Route path="/giving" element={<Giving />} />
             <Route path="/reimbursements" element={<Reimbursements />} />
+            <Route path="/biz-activity" element={<BusinessActivity />} />
           </Route>
         </Routes>
       </BrowserRouter>

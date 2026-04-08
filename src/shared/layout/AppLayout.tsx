@@ -1,17 +1,18 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTheme } from 'next-themes'
-import { Sun, Moon, BookOpen } from 'lucide-react'
-import { Button, Typography } from '@/ui'
+import { Sun, Moon, BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame } from 'lucide-react'
+import { Button, Typography, XStack } from '@/ui'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/', label: 'Runway' },
-  { to: '/quarter', label: 'Quarter' },
-  { to: '/allocate', label: 'Allocate' },
-  { to: '/goals', label: 'Goals' },
-  { to: '/giving', label: 'Giving' },
+  { to: '/', label: 'Runway', icon: Flame },
+  { to: '/quarter', label: 'Quarter', icon: Calendar },
+  { to: '/allocate', label: 'Allocate', icon: HandCoins },
+  { to: '/goals', label: 'Goals', icon: Goal },
+  { to: '/giving', label: 'Giving', icon: HeartHandshake },
+  { to: '/reimbursements', label: 'Reimburse', icon: BadgeDollarSign },
+  { to: '/biz-activity', label: 'Biz Activity', icon: Activity },
   { to: '/journal', label: 'Journal', icon: BookOpen },
-  { to: '/reimbursements', label: 'Reimburse' },
 ]
 
 function ThemeToggle() {
@@ -33,12 +34,12 @@ export function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-14">
+        <XStack className="max-w-5xl mx-auto px-6 items-center justify-between h-14">
           <Typography variant="brand">money date</Typography>
           <ThemeToggle />
-        </div>
+        </XStack>
         <nav className="max-w-5xl mx-auto px-6 overflow-x-auto">
-          <div className="flex gap-1 pb-0">
+          <XStack gap={1}>
             {navItems.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
@@ -57,7 +58,7 @@ export function AppLayout() {
                 {label}
               </NavLink>
             ))}
-          </div>
+          </XStack>
         </nav>
       </header>
       <main>

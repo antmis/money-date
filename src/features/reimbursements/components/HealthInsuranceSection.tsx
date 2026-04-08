@@ -1,15 +1,33 @@
-import { Card, ListItem, Typography } from '@/ui'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Card, Button, ListItem, Typography, YStack } from '@/ui'
 import type { HealthInsuranceExpenses } from '../types'
 import { calcHealthInsuranceReimbursement } from '../utils/calculations'
 import { ReimbursementField } from './ReimbursementField'
+import { Spinner } from '@/ui/spinner'
 
 interface HealthInsuranceSectionProps {
   health: HealthInsuranceExpenses
   onChange: (field: keyof HealthInsuranceExpenses, value: number) => void
+  onSave?: () => Promise<void>
 }
 
-export function HealthInsuranceSection({ health, onChange }: HealthInsuranceSectionProps) {
+export function HealthInsuranceSection({ health, onChange, onSave }: HealthInsuranceSectionProps) {
+  const [isSaving, setIsSaving] = useState(false)
   const total = calcHealthInsuranceReimbursement(health)
+
+  async function handleSave() {
+    if (!onSave) return
+    setIsSaving(true)
+    try {
+      await onSave()
+      toast('Reimbursement saved')
+    } catch {
+      toast.error('Failed to save')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <Card
@@ -18,7 +36,12 @@ export function HealthInsuranceSection({ health, onChange }: HealthInsuranceSect
         <Typography variant="small" as="span">100% deductible</Typography>
       }
       footer={
-        <ListItem title="Insurance total" lineItem={`$${total.toFixed(2)}`} />
+        <YStack>
+          <ListItem title="Insurance Total" lineItem={`$${total.toFixed(2)}`} />
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? <Spinner /> : "Save Reimbursement"}
+          </Button>
+        </YStack>
       }
     >
       <ReimbursementField

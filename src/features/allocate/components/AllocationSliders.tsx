@@ -46,9 +46,7 @@ export function AllocationSliders({ rates, onRatesChange, goalsAmount }: Allocat
 
         <XStack justify="between" align="center">
           <ListItem title="Set in Goals tab" subTitle="Goals" />
-          <Typography variant="amount" color="goals">
-            {fmt(goalsAmount)} / quarter
-          </Typography>
+          <Typography variant="amount" className="shrink-0">{fmt(goalsAmount)} / quarter</Typography>
         </XStack>
       </YStack>
     </Card>

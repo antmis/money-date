@@ -44,9 +44,21 @@ function loadMonthRaw(year: number, month: number): MonthlyReimbursement | null 
   return null
 }
 
+function findMostRecentMonth(year: number, month: number): MonthlyReimbursement | null {
+  let y = year
+  let m = month
+  for (let i = 0; i < 13; i++) {
+    m--
+    if (m === 0) { m = 12; y-- }
+    const found = loadMonthRaw(y, m)
+    if (found) return found
+  }
+  return null
+}
+
 function emptyMonth(year: number, month: number): MonthlyReimbursement {
   const templates = readTemplates()
-  const prevMonth = month === 1 ? loadMonthRaw(year - 1, 12) : loadMonthRaw(year, month - 1)
+  const prevMonth = findMostRecentMonth(year, month)
 
   const offices: OfficeMonthlyData[] = templates.map(t => {
     const prev = prevMonth?.offices?.find(o => o.templateId === t.id)
@@ -68,8 +80,11 @@ function emptyMonth(year: number, month: number): MonthlyReimbursement {
     year,
     month,
     offices,
-    businessMiles: 0,
-    phoneInternet: { internet: 0, phone: 0 },
+    businessMiles: prevMonth?.businessMiles ?? 0,
+    phoneInternet: {
+      internet: prevMonth?.phoneInternet?.internet ?? 0,
+      phone: prevMonth?.phoneInternet?.phone ?? 0,
+    },
     healthInsurance: {
       health: prevMonth?.healthInsurance?.health ?? 0,
       dental: prevMonth?.healthInsurance?.dental ?? 0,
@@ -179,6 +194,10 @@ export function useReimbursements() {
     saveMonth(updated)
   }
 
+  async function save() {
+    saveMonth(data)
+  }
+
   function getMonthData(y: number, m: number): MonthlyReimbursement {
     const existing = loadMonthRaw(y, m)
     if (existing && Array.isArray(existing.offices)) return existing
@@ -210,5 +229,6 @@ export function useReimbursements() {
     markPaid,
     markUnpaid,
     getMonthData,
+    save,
   }
 }

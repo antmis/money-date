@@ -1,14 +1,32 @@
-import { Card, ListItem, Typography } from '@/ui'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Card, Button, ListItem, Typography, YStack } from '@/ui'
 import { calcMileageReimbursement, MILEAGE_RATE_PER_MILE } from '../utils/calculations'
 import { ReimbursementField } from './ReimbursementField'
+import { Spinner } from '@/ui/spinner'
 
 interface MileageSectionProps {
   miles: number
   onChange: (miles: number) => void
+  onSave?: () => Promise<void>
 }
 
-export function MileageSection({ miles, onChange }: MileageSectionProps) {
+export function MileageSection({ miles, onChange, onSave }: MileageSectionProps) {
+  const [isSaving, setIsSaving] = useState(false)
   const reimbursement = calcMileageReimbursement(miles)
+
+  async function handleSave() {
+    if (!onSave) return
+    setIsSaving(true)
+    try {
+      await onSave()
+      toast('Reimbursement saved')
+    } catch {
+      toast.error('Failed to save')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <Card
@@ -17,7 +35,12 @@ export function MileageSection({ miles, onChange }: MileageSectionProps) {
         <Typography variant="small" as="span">${MILEAGE_RATE_PER_MILE.toFixed(2)}/mile (2026 IRS)</Typography>
       }
       footer={
-        <ListItem title="Mileage total" lineItem={`$${reimbursement.toFixed(2)}`} />
+        <YStack>
+          <ListItem title="Mileage Total" lineItem={`$${reimbursement.toFixed(2)}`} />
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? <Spinner /> : "Save Reimbursement"}
+          </Button>
+        </YStack>
       }
     >
       <ReimbursementField
