@@ -1,5 +1,5 @@
 export { HealthInsuranceSection } from './components/HealthInsuranceSection'
-export { OfficeLocationSection } from './components/HomeOfficeSection'
+export { OfficeLocationSection } from './components/OfficeLocationSection'
 export { MileageSection } from './components/MileageSection'
 export { MonthSelector } from './components/MonthSelector'
 export { PhoneInternetSection } from './components/PhoneInternetSection'
