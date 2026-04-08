@@ -12,7 +12,7 @@ const variants = {
   meta:       'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   amount:     'text-sm font-semibold tabular-nums',
   amountLg:   'text-xl font-bold tabular-nums',
-  value:      'text-2xl font-bold',
+  value:      'text-2xl font-semibold',
   display:    'text-4xl font-bold',
   brand:      'text-sm font-semibold tracking-tight',
 } as const

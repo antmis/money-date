@@ -21,7 +21,7 @@ export function StatCard({ label, value, sub, variant = 'default', onEdit }: Sta
   return (
     <Card>
       <XStack justify="between">
-        <YStack gap={1}>
+        <YStack>
           <Typography variant="muted">{label}</Typography>
           <Typography variant="value" color={colorMap[variant]}>{value}</Typography>
           {sub && <Typography variant="small">{sub}</Typography>}
