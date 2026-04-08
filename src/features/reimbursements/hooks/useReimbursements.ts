@@ -8,7 +8,6 @@ import type {
 } from '../types'
 
 const TEMPLATES_KEY = 'reimbursement-office-templates'
-const HEALTH_KEY = 'reimbursement-health-template'
 
 function storageKey(year: number, month: number): string {
   return `reimbursements-${year}-${month}`
@@ -22,16 +21,6 @@ function readTemplates(): OfficeTemplate[] {
     // ignore
   }
   return []
-}
-
-function readHealthTemplate(): HealthInsuranceExpenses {
-  try {
-    const stored = localStorage.getItem(HEALTH_KEY)
-    if (stored) return JSON.parse(stored) as HealthInsuranceExpenses
-  } catch {
-    // ignore
-  }
-  return { health: 0, dental: 0, vision: 0 }
 }
 
 function loadMonthRaw(year: number, month: number): MonthlyReimbursement | null {
