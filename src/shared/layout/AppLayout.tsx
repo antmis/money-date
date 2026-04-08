@@ -40,7 +40,7 @@ export function AppLayout() {
                   )
                 }
               >
-                {Icon && <Icon className="h-3.5 w-3.5" />}
+                {Icon && <Icon size={14} />}
                 {label}
               </NavLink>
             ))}

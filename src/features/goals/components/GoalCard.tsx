@@ -44,7 +44,7 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
         title={goal.name}
         headerExtra={
           <Button variant="ghost" size="icon-sm" onClick={() => setEditOpen(true)} aria-label="Edit goal">
-            <Pencil className="h-3.5 w-3.5" />
+            <Pencil />
           </Button>
         }
       >

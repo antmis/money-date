@@ -21,7 +21,7 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="User menu">
-          <User2 className="h-4 w-4" />
+          <User2 />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -31,21 +31,21 @@ export function UserMenu() {
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
           <DropdownMenuRadioItem value="light">
-            <Sun className="h-3.5 w-3.5" />
+            <Sun />
             Light
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark">
-            <Moon className="h-3.5 w-3.5" />
+            <Moon />
             Dark
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="system">
-            <Monitor className="h-3.5 w-3.5" />
+            <Monitor />
             System
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => void signOut()}>
-          <LogOut className="h-3.5 w-3.5" />
+          <LogOut />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

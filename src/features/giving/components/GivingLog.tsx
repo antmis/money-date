@@ -38,7 +38,7 @@ export function GivingLog({ donations, ytdTotal, onEdit }: GivingLogProps) {
                   <TableCell className="text-right tabular-nums">{fmt(d.amount)}</TableCell>
                   <TableCell className="text-center">
                     {d.receiptName
-                      ? <Paperclip className="h-3.5 w-3.5 text-muted-foreground inline" aria-label={d.receiptName} />
+                      ? <Paperclip aria-label={d.receiptName} />
                       : <span className="text-muted-foreground/40">—</span>
                     }
                   </TableCell>

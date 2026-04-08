@@ -27,7 +27,7 @@ export function Quarter() {
       />
 
       <Card title="This Quarter">
-        <YStack className="w-72" gap={2}>
+        <YStack gap={2}>
           <XStack gap={4}>
             <Field className="flex-1">
               <Label>Quarter</Label>

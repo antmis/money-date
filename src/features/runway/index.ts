@@ -1,4 +1,4 @@
-export { CashBalanceCards } from './components/CashBalanceCards'
+export { RunwayCards } from './components/RunwayCards'
 export { CashEditDialog } from './components/CashEditDialog'
 export { RunwayStatus } from './components/RunwayStatus'
 export { useRunway } from './hooks/useRunway'

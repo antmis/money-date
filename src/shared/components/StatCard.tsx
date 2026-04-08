@@ -23,7 +23,7 @@ export function StatCard({ label, value, sub, variant = 'default', onEdit }: Sta
       <XStack justify="between">
         <YStack gap={1}>
           <Typography variant="muted">{label}</Typography>
-          <Typography variant="display" color={colorMap[variant]}>{value}</Typography>
+          <Typography variant="value" color={colorMap[variant]}>{value}</Typography>
           {sub && <Typography variant="small">{sub}</Typography>}
         </YStack>
         {onEdit && (
