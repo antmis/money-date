@@ -24,7 +24,15 @@ function rowToData(row: Record<string, unknown>): MonthlyReimbursement {
     month: Number(row.month),
     offices: (row.offices as OfficeMonthlyData[]) ?? [],
     businessMiles: Number(row.business_miles ?? 0),
-    phoneInternet: { internetUsage: 70, phoneUsage: 70, ...((row.phone_internet as PhoneInternetExpenses) ?? { internet: 0, phone: 0 }) },
+    phoneInternet: ((): PhoneInternetExpenses => {
+      const pi = (row.phone_internet as Partial<PhoneInternetExpenses>) ?? {}
+      return {
+        internet: pi.internet ?? 0,
+        phone: pi.phone ?? 0,
+        internetUsage: pi.internetUsage ?? 50,
+        phoneUsage: pi.phoneUsage ?? 50,
+      }
+    })(),
     healthInsurance: (row.health_insurance as HealthInsuranceExpenses) ?? { health: 0, dental: 0, vision: 0 },
     paid: Boolean(row.paid),
     paymentMethod: (row.payment_method as string) ?? '',
