@@ -8,6 +8,8 @@ import {
   calcTotalMonthlyReimbursement,
 } from '../utils/calculations'
 
+
+
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 const YEAR_OPTIONS = ['2025', '2026']
@@ -23,7 +25,7 @@ interface YearSummaryProps {
 function emptyMonth(year: number, month: number): MonthlyReimbursement {
   return {
     year, month, offices: [], businessMiles: 0,
-    phoneInternet: { internet: 0, phone: 0 },
+    phoneInternet: { internet: 0, phone: 0, internetUsage: 50, phoneUsage: 50 },
     healthInsurance: { health: 0, dental: 0, vision: 0 },
     paid: false, paymentMethod: '', paidDate: '',
   }
@@ -33,16 +35,13 @@ export function YearSummary({ year, currentMonth, yearData, onEdit, onYearChange
   const months = Array.from({ length: 12 }, (_, i) => {
     const m = i + 1
     const data = yearData.find(r => r.year === year && r.month === m) ?? emptyMonth(year, m)
-    const officesTotal = data.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
-    return {
-      month: m,
-      data,
-      officesTotal,
-      milesTotal: calcMileageReimbursement(data.businessMiles),
-      phoneTotal: calcPhoneInternetReimbursement(data.phoneInternet),
-      healthTotal: calcHealthInsuranceReimbursement(data.healthInsurance),
-      total: calcTotalMonthlyReimbursement(data),
-    }
+    const ct = data.computedTotals
+    const officesTotal = ct?.officesTotal ?? data.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0)
+    const milesTotal = ct?.milesTotal ?? calcMileageReimbursement(data.businessMiles)
+    const phoneTotal = ct?.phoneTotal ?? calcPhoneInternetReimbursement(data.phoneInternet)
+    const healthTotal = ct?.healthTotal ?? calcHealthInsuranceReimbursement(data.healthInsurance)
+    const total = ct?.total ?? calcTotalMonthlyReimbursement(data)
+    return { month: m, data, officesTotal, milesTotal, phoneTotal, healthTotal, total }
   })
 
   const yearTotal = months.reduce((sum, m) => sum + m.total, 0)

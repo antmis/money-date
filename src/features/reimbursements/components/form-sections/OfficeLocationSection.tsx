@@ -22,35 +22,33 @@ export function OfficeLocationSection({ office, onChange, onEdit }: OfficeLocati
     <Card
       footer={<ListItem title={`${office.name} Total`} lineItem={`$${total.toFixed(2)}`} />}
     >
-      <YStack>
-        {hasLocation && (
-          <ListItem
-            title={office.name}
-            subTitle={office.address && (
-              `${office.address}`
-            )}
-            lineItem={
+      {hasLocation && (
+        <ListItem
+          title={office.name}
+          subTitle={office.address && (
+            `${office.address}`
+          )}
+          lineItem={
+            <XStack gap={1}>
               <YStack className="items-end">
-                <Typography variant="small">{ratePct}% reimbursement</Typography>
                 {(office.officeSqft > 0 || office.totalSqft > 0) && (
                   <Typography variant="small">{office.officeSqft} / {office.totalSqft} sq ft</Typography>
                 )}
+                <Typography variant="small">{ratePct}% reimbursement</Typography>
               </YStack>
-            }
-          />
-        )}
-        {onEdit && (
-          <XStack className="justify-end">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onEdit}
-            >
-              <Pencil /> Edit {office.name}
-            </Button>
-          </XStack>
-        )}
-      </YStack>
+              {onEdit && (
+                <Button
+                  variant="secondary"
+                  size="icon-sm"
+                  onClick={onEdit}
+                >
+                  <Pencil />
+                </Button>
+              )}
+            </XStack>
+          }
+        />
+      )}
 
       <YStack gap={4}>
         <ReimbursementField label="Rent" id={`${slug}-rent`} value={office.rent} reimbursement={office.rent * rate} prefix="$" onChange={(v) => onChange('rent', v)} />

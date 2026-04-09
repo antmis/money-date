@@ -1,7 +1,6 @@
 import type { HealthInsuranceExpenses, MonthlyReimbursement, OfficeMonthlyData, PhoneInternetExpenses } from '../types'
 
-export const MILEAGE_RATE_PER_MILE = 0.70  // 2026 IRS rate
-export const PHONE_INTERNET_RATE = 0.70
+export const MILEAGE_RATE_PER_MILE = 0.725  // 2026 IRS rate
 
 export function calcOfficeRate(office: OfficeMonthlyData): number {
   if (office.totalSqft <= 0) return 0
@@ -19,7 +18,8 @@ export function calcMileageReimbursement(miles: number): number {
 }
 
 export function calcPhoneInternetReimbursement(expenses: PhoneInternetExpenses): number {
-  return (expenses.internet + expenses.phone) * PHONE_INTERNET_RATE
+  return (expenses.internet * (expenses.internetUsage / 100))
+       + (expenses.phone    * (expenses.phoneUsage    / 100))
 }
 
 export function calcHealthInsuranceReimbursement(health: HealthInsuranceExpenses): number {

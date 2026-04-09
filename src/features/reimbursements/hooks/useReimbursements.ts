@@ -1,11 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import type {
+  ComputedTotals,
   HealthInsuranceExpenses,
   MonthlyReimbursement,
   OfficeMonthlyData,
   OfficeTemplate,
   PhoneInternetExpenses,
 } from '../types'
+import {
+  calcOfficeReimbursement,
+  calcMileageReimbursement,
+  calcPhoneInternetReimbursement,
+  calcHealthInsuranceReimbursement,
+  calcTotalMonthlyReimbursement,
+} from '../utils/calculations'
 import { supabase } from '@/lib/supabase'
 import { useWorkspace } from '@/features/workspace'
 import { toast } from 'sonner'
@@ -16,18 +24,19 @@ function rowToData(row: Record<string, unknown>): MonthlyReimbursement {
     month: Number(row.month),
     offices: (row.offices as OfficeMonthlyData[]) ?? [],
     businessMiles: Number(row.business_miles ?? 0),
-    phoneInternet: (row.phone_internet as PhoneInternetExpenses) ?? { internet: 0, phone: 0 },
+    phoneInternet: { internetUsage: 70, phoneUsage: 70, ...((row.phone_internet as PhoneInternetExpenses) ?? { internet: 0, phone: 0 }) },
     healthInsurance: (row.health_insurance as HealthInsuranceExpenses) ?? { health: 0, dental: 0, vision: 0 },
     paid: Boolean(row.paid),
     paymentMethod: (row.payment_method as string) ?? '',
     paidDate: (row.paid_date as string) ?? '',
+    computedTotals: (row.computed_totals as ComputedTotals) ?? undefined,
   }
 }
 
 function emptyMonth(year: number, month: number): MonthlyReimbursement {
   return {
     year, month, offices: [], businessMiles: 0,
-    phoneInternet: { internet: 0, phone: 0 },
+    phoneInternet: { internet: 0, phone: 0, internetUsage: 50, phoneUsage: 50 },
     healthInsurance: { health: 0, dental: 0, vision: 0 },
     paid: false, paymentMethod: '', paidDate: '',
   }
@@ -102,6 +111,13 @@ export function useReimbursements() {
 
   const persist = useCallback(async (updated: MonthlyReimbursement) => {
     if (!activeBusiness) return
+    const computedTotals: ComputedTotals = {
+      officesTotal: updated.offices.reduce((sum, o) => sum + calcOfficeReimbursement(o), 0),
+      milesTotal: calcMileageReimbursement(updated.businessMiles),
+      phoneTotal: calcPhoneInternetReimbursement(updated.phoneInternet),
+      healthTotal: calcHealthInsuranceReimbursement(updated.healthInsurance),
+      total: calcTotalMonthlyReimbursement(updated),
+    }
     const { error } = await supabase.from('monthly_reimbursements').upsert({
       business_id: activeBusiness.id,
       year: updated.year,
@@ -113,6 +129,7 @@ export function useReimbursements() {
       paid: updated.paid,
       payment_method: updated.paymentMethod,
       paid_date: updated.paidDate,
+      computed_totals: computedTotals,
       updated_at: new Date().toISOString(),
     })
     if (error) toast.error('Failed to save reimbursement data')

@@ -34,6 +34,16 @@ export interface HealthInsuranceExpenses {
 export interface PhoneInternetExpenses {
   internet: number
   phone: number
+  internetUsage: number  // 0–100 percent of internet that is business use
+  phoneUsage: number     // 0–100 percent of phone that is business use
+}
+
+export interface ComputedTotals {
+  officesTotal: number
+  milesTotal: number
+  phoneTotal: number
+  healthTotal: number
+  total: number
 }
 
 export interface MonthlyReimbursement {
@@ -46,4 +56,5 @@ export interface MonthlyReimbursement {
   paid: boolean
   paymentMethod: string
   paidDate: string
+  computedTotals?: ComputedTotals
 }
