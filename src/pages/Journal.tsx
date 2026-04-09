@@ -11,9 +11,7 @@ const currentQuarter = (['Q1', 'Q2', 'Q3', 'Q4'] as const)[currentQuarterIndex] 
 export function Journal() {
   const {
     entry,
-    answers,
     currentStep,
-    updateAnswer,
     goNext,
     goBack,
     complete,
@@ -43,8 +41,6 @@ export function Journal() {
             promptNumber={currentStep + 1}
             title={prompts[currentStep].title}
             helperText={prompts[currentStep].helperText}
-            value={answers[prompts[currentStep].key]}
-            onChange={(val) => updateAnswer(prompts[currentStep].key, val)}
           />
 
           <JournalNav

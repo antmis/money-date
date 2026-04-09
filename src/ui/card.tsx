@@ -14,7 +14,7 @@ interface CardProps {
   /** Content rendered to the right of the title in a flex-between row (e.g. a badge, toggle, or info span) */
   headerExtra?: React.ReactNode
   /** Content inside the card body */
-  children: React.ReactNode
+  children?: React.ReactNode
   /** Content rendered in the card footer (e.g. action buttons, links) */
   footer?: React.ReactNode
   /** className forwarded to the root Card element (e.g. custom border or background) */
@@ -42,9 +42,11 @@ export function Card({ title, description, headerPre, headerPost, headerExtra, f
           {headerPost}
         </CardHeader>
       )}
-      <CardContent className={cn("space-y-2", !hasHeader && "pt-6")}>
-        {children}
-      </CardContent>
+      {children != null && 
+        <CardContent className={cn("space-y-2", !hasHeader && "pt-6")}>
+          {children}
+        </CardContent>
+      }
       {footer != null && <CardFooter>{footer}</CardFooter>}
     </CardPrimitive>
   )
