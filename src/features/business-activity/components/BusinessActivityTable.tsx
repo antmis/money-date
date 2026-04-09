@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import {
   Badge,
   Card,
@@ -11,23 +13,22 @@ import {
   Typography,
 } from '@/ui'
 import type { BusinessActivity } from '../types'
+import { formatDate } from '@/shared/utils/formatDate'
 
 interface BusinessActivityTableProps {
   entries: BusinessActivity[]
   onEdit: (entry: BusinessActivity) => void
 }
 
-function formatDate(iso: string): string {
-  if (!iso) return '—'
-  return new Date(iso + 'T12:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
 export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTableProps) {
-  const totalAmount = entries.reduce((sum, entry) => sum + entry.amount, 0)  
+  const [sortAsc, setSortAsc] = useState(false)
+
+  const sorted = [...entries].sort((a, b) => {
+    const cmp = a.date.localeCompare(b.date)
+    return sortAsc ? cmp : -cmp
+  })
+
+  const totalAmount = entries.reduce((sum, entry) => sum + entry.amount, 0)
 
   return (
     <Card title="Business Activity Log">
@@ -37,17 +38,24 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
+              <TableHead>
+                <button
+                  onClick={() => setSortAsc(a => !a)}
+                  className="flex items-center gap-1 hover:text-foreground transition-colors"
+                >
+                  Date <ChevronsUpDown size={14} />
+                </button>
+              </TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Customer / Vendor</TableHead>
               <TableHead>Account</TableHead>
               <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Reimb. Date</TableHead>
-              <TableHead>Payment</TableHead>
+              <TableHead>Reimbursed?</TableHead>
+              <TableHead>Purpose</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {entries.map(entry => (
+            {sorted.map(entry => (
               <TableRow key={entry.id} className="cursor-pointer" onClick={() => onEdit(entry)}>
                 <TableCell className="whitespace-nowrap">{formatDate(entry.date)}</TableCell>
                 <TableCell>
@@ -64,9 +72,19 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
                 <TableCell className="text-right font-medium tabular-nums">
                   ${entry.amount.toFixed(2)}
                 </TableCell>
-                <TableCell className="whitespace-nowrap">{formatDate(entry.reimbursementDate)}</TableCell>
-                <TableCell className="max-w-[140px] truncate" title={entry.paymentMethod}>
-                  {entry.paymentMethod || '—'}
+                <TableCell>
+                  {!entry.reimbursementDate && (
+                    <Badge variant="secondary">
+                      <Check />
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {entry.businessPurpose && (
+                    <Badge variant="secondary">
+                      <Check />
+                    </Badge>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

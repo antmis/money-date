@@ -1,6 +1,7 @@
 import { Paperclip } from 'lucide-react'
 import { Card, Typography, Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, XStack } from '@/ui'
 import type { Donation } from '../types'
+import { formatDate } from '@/shared/utils/formatDate'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -33,7 +34,7 @@ export function GivingLog({ donations, ytdTotal, onEdit }: GivingLogProps) {
             <TableBody>
               {donations.map((d) => (
                 <TableRow key={d.id} className="cursor-pointer" onClick={() => onEdit(d)}>
-                  <TableCell>{d.date}</TableCell>
+                  <TableCell>{formatDate(d.date)}</TableCell>
                   <TableCell>{d.organization}</TableCell>
                   <TableCell className="text-right tabular-nums">{fmt(d.amount)}</TableCell>
                   <TableCell className="text-center">

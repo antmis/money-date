@@ -3,6 +3,7 @@ import { CalendarIcon } from 'lucide-react'
 import { Card, Calendar, Button, Dialog, Field, Input, Label, Badge, Typography, ListItem, ListGroup, XStack, YStack } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
 import type { MonthlyReimbursement } from '../types'
+import { formatDate } from '@/shared/utils/formatDate'
 import {
   calcOfficeReimbursement,
   calcMileageReimbursement,
@@ -121,9 +122,7 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
                   variant="outline"
                 >
                   <CalendarIcon />
-                  {paidDate
-                    ? new Date(paidDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : 'Pick a date'}
+                  {paidDate ? formatDate(paidDate) : 'Pick a date'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">

@@ -70,16 +70,18 @@ export function useReimbursements() {
       setData(rowToData(row as Record<string, unknown>))
     } else {
       // Carry forward from most recent prior month
-      const { data: prevRows } = await supabase
+      const { data: allRows } = await supabase
         .from('monthly_reimbursements')
         .select('*')
         .eq('business_id', activeBusiness.id)
-        .or(`year.lt.${y},and(year.eq.${y},month.lt.${m})`)
         .order('year', { ascending: false })
         .order('month', { ascending: false })
-        .limit(1)
+        .limit(24)
 
-      const prev = prevRows?.[0] ? rowToData(prevRows[0] as Record<string, unknown>) : null
+      const prevRow = allRows?.find(r =>
+        Number(r.year) < y || (Number(r.year) === y && Number(r.month) < m)
+      ) ?? null
+      const prev = prevRow ? rowToData(prevRow as Record<string, unknown>) : null
       const empty = emptyMonth(y, m)
       if (prev) {
         empty.businessMiles = prev.businessMiles

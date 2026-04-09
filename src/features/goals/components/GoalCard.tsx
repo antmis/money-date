@@ -43,7 +43,7 @@ export function GoalCard({ goal, onUpdate, onDelete }: GoalCardProps) {
       <Card
         title={goal.name}
         headerExtra={
-          <Button variant="ghost" size="icon-sm" onClick={() => setEditOpen(true)} aria-label="Edit goal">
+          <Button variant="secondary" size="icon-sm" onClick={() => setEditOpen(true)} aria-label="Edit goal">
             <Pencil />
           </Button>
         }
