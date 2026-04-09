@@ -44,7 +44,7 @@ export function Dialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
+        <div className="flex-1 space-y-4 overflow-y-auto px-6 pb-8 pt-4">
           {children}
         </div>
         {footer && <DialogFooter>{footer}</DialogFooter>}

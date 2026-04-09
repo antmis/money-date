@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { GoalCard, useGoals } from '@/features/goals'
-import { Button, Dialog, Input, Label, Separator, Typography, Field, XStack, YStack, Card } from '@/ui'
+import { Button, Dialog, Input, Label, Separator, Typography, Field, XStack, YStack, Card, Grid } from '@/ui'
 import { PageSkeleton } from '@/shared/components'
 
 function fmt(n: number) {
@@ -80,16 +80,16 @@ export function Goals() {
         }
       >
         <YStack gap={4}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Field className="md:col-span-2">
-              <Label htmlFor="new-name">Goal Name</Label>
-              <Input
-                id="new-name"
-                placeholder="e.g. Home down payment"
-                value={draft.name}
-                onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-              />
-            </Field>
+          <Field>
+            <Label htmlFor="new-name">Goal Name</Label>
+            <Input
+              id="new-name"
+              placeholder="e.g. Home down payment"
+              value={draft.name}
+              onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+            />
+          </Field>
+          <Grid cols={2}>
             <Field>
               <Label htmlFor="new-target">Target ($)</Label>
               <Input
@@ -110,17 +110,18 @@ export function Goals() {
                 onChange={(e) => setDraft((d) => ({ ...d, currentAmount: Number(e.target.value) || 0 }))}
               />
             </Field>
-            <Field className="md:col-span-2">
-              <Label htmlFor="new-contrib">Quarterly Contribution ($)</Label>
-              <Input
-                id="new-contrib"
-                type="number"
-                prefix="$"
-                value={draft.quarterlyContribution || ''}
-                onChange={(e) => setDraft((d) => ({ ...d, quarterlyContribution: Number(e.target.value) || 0 }))}
-              />
-            </Field>
-          </div>
+          </Grid>
+
+          <Field className="md:col-span-2">
+            <Label htmlFor="new-contrib">Quarterly Contribution ($)</Label>
+            <Input
+              id="new-contrib"
+              type="number"
+              prefix="$"
+              value={draft.quarterlyContribution || ''}
+              onChange={(e) => setDraft((d) => ({ ...d, quarterlyContribution: Number(e.target.value) || 0 }))}
+            />
+          </Field>
         </YStack>
       </Dialog>
     </PageContainer>

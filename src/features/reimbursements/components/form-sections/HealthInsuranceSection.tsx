@@ -1,7 +1,7 @@
 import { Card, ListItem, Typography } from '@/ui'
-import type { HealthInsuranceExpenses } from '../types'
-import { calcHealthInsuranceReimbursement } from '../utils/calculations'
-import { ReimbursementField } from './ReimbursementField'
+import type { HealthInsuranceExpenses } from '../../types'
+import { calcHealthInsuranceReimbursement } from '../../utils/calculations'
+import { ReimbursementField } from '../ReimbursementField'
 
 interface HealthInsuranceSectionProps {
   health: HealthInsuranceExpenses

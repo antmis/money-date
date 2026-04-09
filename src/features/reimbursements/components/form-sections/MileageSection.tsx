@@ -1,6 +1,6 @@
 import { Card, ListItem, Typography } from '@/ui'
-import { calcMileageReimbursement, MILEAGE_RATE_PER_MILE } from '../utils/calculations'
-import { ReimbursementField } from './ReimbursementField'
+import { calcMileageReimbursement, MILEAGE_RATE_PER_MILE } from '../../utils/calculations'
+import { ReimbursementField } from '../ReimbursementField'
 
 interface MileageSectionProps {
   miles: number

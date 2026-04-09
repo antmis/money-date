@@ -117,7 +117,7 @@ export function ReimbursementSummary({ data, onMarkPaid, onMarkUnpaid }: Reimbur
                 <Button
                   id="paid-date"
                   type="button"
-                  className="flex w-full justify-start gap-2"
+                  className="flex w-full justify"
                   variant="outline"
                 >
                   <CalendarIcon />

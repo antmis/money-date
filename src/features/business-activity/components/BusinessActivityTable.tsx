@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -26,6 +27,8 @@ function formatDate(iso: string): string {
 }
 
 export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTableProps) {
+  const totalAmount = entries.reduce((sum, entry) => sum + entry.amount, 0)  
+
   return (
     <Card title="Business Activity Log">
       {entries.length === 0 ? (
@@ -68,6 +71,14 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+          <TableRow>
+            <TableCell className="pr-4 font-semibold">Total</TableCell>
+            <TableCell colSpan={3} />
+            <TableCell className="text-right tabular-nums font-semibold">${totalAmount.toFixed(2)}</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableFooter>
         </Table>
       )}
     </Card>

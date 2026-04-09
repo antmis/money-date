@@ -59,7 +59,7 @@ export function YearSummary({ year, currentMonth, yearData, onEdit, onYearChange
         <TableHeader>
           <TableRow>
             <TableHead className="w-16">Month</TableHead>
-            <TableHead className="w-20 text-right">Offices</TableHead>
+            <TableHead className="w-20 text-right">Office</TableHead>
             <TableHead className="w-16 text-right">Miles</TableHead>
             <TableHead className="w-16 text-right">Phone</TableHead>
             <TableHead className="w-16 text-right">Health</TableHead>

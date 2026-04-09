@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CalendarIcon } from 'lucide-react'
-import { ConfirmDeleteDialog, Dialog, Field, Input, Label, Button, Select, Typography, Calendar, XStack, YStack } from '@/ui'
+import { ConfirmDeleteDialog, Dialog, Field, Input, Label, Button, Select, Typography, Calendar, XStack, YStack, Grid } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
 import { KNOWN_ORGS } from '../utils/constants'
 import type { Donation } from '../types'
@@ -129,34 +129,6 @@ export function DonationForm({ open, onOpenChange, onSubmit, onUpdate, onDelete,
       <form id="donation-form" onSubmit={handleSubmit(onFormSubmit)}>
         <YStack gap={4}>
           <Field>
-            <Label>Date</Label>
-            <Popover open={calOpen} onOpenChange={setCalOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  className="flex w-full"
-                  variant="outline"
-                >
-                  <CalendarIcon />
-                  {formatDisplay(dateValue)}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateValue ? new Date(dateValue + 'T12:00:00') : undefined}
-                  onSelect={(d) => {
-                    if (d) {
-                      setValue('date', toDateString(d), { shouldValidate: true })
-                      setCalOpen(false)
-                    }
-                  }}
-                />
-              </PopoverContent>
-            </Popover>
-            {errors.date && <Typography variant="small" color="danger">{errors.date.message}</Typography>}
-          </Field>
-          <Field>
             <Label>Organization</Label>
             <Select
               value={watch('organization')}
@@ -169,11 +141,41 @@ export function DonationForm({ open, onOpenChange, onSubmit, onUpdate, onDelete,
             )}
             {errors.organization && <Typography variant="small" color="danger">{errors.organization.message}</Typography>}
           </Field>
-          <Field>
-            <Label htmlFor="amount">Amount</Label>
-            <Input id="amount" type="number" placeholder="0" prefix="$" {...register('amount', { valueAsNumber: true })} />
-            {errors.amount && <Typography variant="small" color="danger">{errors.amount.message}</Typography>}
-          </Field>
+          <Grid cols={2}>
+            <Field>
+              <Label>Date</Label>
+              <Popover open={calOpen} onOpenChange={setCalOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    className="flex w-full"
+                    variant="outline"
+                  >
+                    <CalendarIcon />
+                    {formatDisplay(dateValue)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateValue ? new Date(dateValue + 'T12:00:00') : undefined}
+                    onSelect={(d) => {
+                      if (d) {
+                        setValue('date', toDateString(d), { shouldValidate: true })
+                        setCalOpen(false)
+                      }
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+              {errors.date && <Typography variant="small" color="danger">{errors.date.message}</Typography>}
+            </Field>
+            <Field>
+              <Label htmlFor="amount">Amount</Label>
+              <Input id="amount" type="number" placeholder="0" prefix="$" {...register('amount', { valueAsNumber: true })} />
+              {errors.amount && <Typography variant="small" color="danger">{errors.amount.message}</Typography>}
+            </Field>
+          </Grid>
           <Field>
             <Label htmlFor="receipt">Receipt (PDF)</Label>
             <Input

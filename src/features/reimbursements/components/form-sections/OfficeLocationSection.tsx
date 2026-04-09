@@ -1,8 +1,8 @@
 import { Pencil } from 'lucide-react'
 import { Card, Button, ListItem, Typography, YStack, XStack } from '@/ui'
-import type { OfficeMonthlyData } from '../types'
-import { calcOfficeRate, calcOfficeReimbursement } from '../utils/calculations'
-import { ReimbursementField } from './ReimbursementField'
+import type { OfficeMonthlyData } from '../../types'
+import { calcOfficeRate, calcOfficeReimbursement } from '../../utils/calculations'
+import { ReimbursementField } from '../ReimbursementField'
 
 interface OfficeLocationSectionProps {
   office: OfficeMonthlyData

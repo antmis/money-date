@@ -1,7 +1,7 @@
 import { Card, ListItem, Typography } from '@/ui'
-import type { PhoneInternetExpenses } from '../types'
-import { calcPhoneInternetReimbursement, PHONE_INTERNET_RATE } from '../utils/calculations'
-import { ReimbursementField } from './ReimbursementField'
+import type { PhoneInternetExpenses } from '../../types'
+import { calcPhoneInternetReimbursement, PHONE_INTERNET_RATE } from '../../utils/calculations'
+import { ReimbursementField } from '../ReimbursementField'
 
 interface PhoneInternetSectionProps {
   expenses: PhoneInternetExpenses

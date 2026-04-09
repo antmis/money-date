@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CalendarIcon } from 'lucide-react'
-import { Button, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack } from '@/ui'
+import { Button, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack, Separator, Typography } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
 import { XERO_ACCOUNTS } from '../types'
 import type { BusinessActivity, BusinessActivityType } from '../types'
@@ -109,7 +109,7 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
     <Dialog
       open={open}
       onOpenChange={handleOpenChange}
-      title={isEdit ? 'Edit Entry' : 'Add Business Activity'}
+      title={isEdit ? 'Edit Activity' : 'Add Business Activity'}
       className="max-w-xl"
       footer={
         <div className={`flex gap-2 ${isEdit ? 'justify-between w-full' : 'justify-end'}`}>
@@ -124,14 +124,48 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
       }
     >
       <YStack gap={4}>
-        <Grid cols={2} className="gap-3">
+        {/* Customer / Vendor Name */}
+        <Field>
+          <Label>Customer / Vendor Name</Label>
+          <Input
+            placeholder="e.g. Adobe Inc."
+            value={form.customerVendorName}
+            onChange={e => setField('customerVendorName', e.target.value)}
+          />
+        </Field>
+
+        <Grid cols={2}>
+          {/* Type */}
+          <Field>
+            <Label>Type</Label>
+            <Select
+              value={form.type}
+              onValueChange={(v) => setField('type', v as BusinessActivityType)}
+              options={[
+                { value: 'business_expense', label: 'Business Expense' },
+                { value: 'business_income', label: 'Business Income' },
+              ]}
+            />
+          </Field>
+
+          {/* Account */}
+          <Field>
+            <Label>Account</Label>
+            <Select
+              value={form.account}
+              onValueChange={(v) => setField('account', v)}
+              placeholder="Select account"
+              options={XERO_ACCOUNTS.map(a => ({ value: a, label: a }))}
+            />
+          </Field>
+          
           {/* Date */}
           <Field>
             <Label>Date</Label>
             <Popover open={dateCal} onOpenChange={setDateCal}>
               <PopoverTrigger asChild>
-                <Button type="button" variant="outline" className="flex w-full justify-start gap-2">
-                  <CalendarIcon className="size-4" />
+                <Button type="button" variant="outline" className="flex w-full">
+                  <CalendarIcon />
                   {form.date ? formatDate(form.date) : 'Pick a date'}
                 </Button>
               </PopoverTrigger>
@@ -151,40 +185,6 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
             </Popover>
           </Field>
 
-          {/* Type */}
-          <Field>
-            <Label>Type</Label>
-            <Select
-              value={form.type}
-              onValueChange={(v) => setField('type', v as BusinessActivityType)}
-              options={[
-                { value: 'business_expense', label: 'Business Expense' },
-                { value: 'business_income', label: 'Business Income' },
-              ]}
-            />
-          </Field>
-
-          {/* Customer / Vendor Name */}
-          <Field>
-            <Label>Customer / Vendor Name</Label>
-            <Input
-              placeholder="e.g. Adobe Inc."
-              value={form.customerVendorName}
-              onChange={e => setField('customerVendorName', e.target.value)}
-            />
-          </Field>
-
-          {/* Account */}
-          <Field>
-            <Label>Account</Label>
-            <Select
-              value={form.account}
-              onValueChange={(v) => setField('account', v)}
-              placeholder="Select account"
-              options={XERO_ACCOUNTS.map(a => ({ value: a, label: a }))}
-            />
-          </Field>
-
           {/* Amount */}
           <Field>
             <Label>Amount</Label>
@@ -198,14 +198,43 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
               onChange={e => setField('amount', e.target.value)}
             />
           </Field>
+        </Grid>
+
+        {/* Business Purpose */}
+        <Field>
+          <Label>Business Purpose</Label>
+          <Textarea
+            placeholder="Describe the business purpose of this transaction..."
+            value={form.businessPurpose}
+            onChange={e => setField('businessPurpose', e.target.value)}
+            rows={3}
+          />
+        </Field>
+
+        <XStack gap={4} align="center" className="my-2">
+          <Separator className="flex-1" />
+          <Typography variant="muted" >Have you reimbursed this expense?</Typography>
+          <Separator className="flex-1" />
+        </XStack>
+
+        <Grid cols={2}>
+          {/* Payment Method */}
+          <Field>
+            <Label>Payment Method</Label>
+            <Input
+              placeholder="e.g. Chase Sapphire, Venmo"
+              value={form.paymentMethod}
+              onChange={e => setField('paymentMethod', e.target.value)}
+            />
+          </Field>
 
           {/* Reimbursement Date */}
           <Field>
             <Label>Reimbursement Date</Label>
             <Popover open={reimbCal} onOpenChange={setReimbCal}>
               <PopoverTrigger asChild>
-                <Button type="button" variant="outline" className="flex w-full justify-start gap-2">
-                  <CalendarIcon className="size-4" />
+                <Button type="button" variant="outline" className="flex w-full">
+                  <CalendarIcon />
                   {form.reimbursementDate ? formatDate(form.reimbursementDate) : 'Pick a date'}
                 </Button>
               </PopoverTrigger>
@@ -224,28 +253,7 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
               </PopoverContent>
             </Popover>
           </Field>
-
-          {/* Payment Method */}
-          <Field className="col-span-2">
-            <Label>Payment Method</Label>
-            <Input
-              placeholder="e.g. Chase Sapphire, Venmo"
-              value={form.paymentMethod}
-              onChange={e => setField('paymentMethod', e.target.value)}
-            />
-          </Field>
         </Grid>
-
-        {/* Business Purpose */}
-        <Field>
-          <Label>Business Purpose</Label>
-          <Textarea
-            placeholder="Describe the business purpose of this transaction..."
-            value={form.businessPurpose}
-            onChange={e => setField('businessPurpose', e.target.value)}
-            rows={3}
-          />
-        </Field>
       </YStack>
     </Dialog>
 
