@@ -73,7 +73,7 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
                   ${entry.amount.toFixed(2)}
                 </TableCell>
                 <TableCell>
-                  {!entry.reimbursementDate && (
+                  {entry.reimbursementDate && (
                     <Badge variant="secondary">
                       <Check />
                     </Badge>
