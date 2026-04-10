@@ -23,7 +23,7 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
       title="Journal Complete"
       description="Take a deep breath and let it settle. You are exactly where you need to be."
       footer={
-        <XStack gap={2} className="flex-1 justify-end">
+        <XStack gap={2} className="flex-1 flex-wrap justify-end">
           <ConfettiButton 
             variant="outline"
             options={{

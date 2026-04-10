@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Card as CardPrimitive, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/ui/primitives/card"
 import { cn } from "@/lib/utils"
+import { XStack, YStack } from "./stack"
 
 interface CardProps {
   /** Main title rendered in the card header */
@@ -31,14 +32,17 @@ export function Card({ title, description, headerPre, headerPost, headerExtra, f
         <CardHeader>
           {headerPre}
           {headerExtra ? (
-            <div className="flex items-center justify-between">
-              {title != null && <CardTitle className="text-base">{title}</CardTitle>}
-              {headerExtra}
-            </div>
+            <XStack justify="between" align="start" gap={4} className="w-full">
+              <YStack className="w-auto min-w-0 flex-1">
+                {title != null && <CardTitle className="text-base">{title}</CardTitle>}
+                {description != null && <CardDescription>{description}</CardDescription>}
+              </YStack>
+              <div className="shrink-0">{headerExtra}</div>
+            </XStack>
           ) : (
             title != null && <CardTitle className="text-base">{title}</CardTitle>
           )}
-          {description != null && <CardDescription>{description}</CardDescription>}
+          {description != null && !headerExtra && <CardDescription>{description}</CardDescription>}
           {headerPost}
         </CardHeader>
       )}

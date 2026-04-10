@@ -1,5 +1,5 @@
 import { Button, XStack } from '@/ui'
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, BookCheck } from 'lucide-react'
 
 interface JournalNavProps {
   currentStep: number
@@ -31,8 +31,8 @@ export function JournalNav({
 
       {isLast ? (
         <Button onClick={onComplete}>
-          <CheckCircle />
-          Complete Quarter
+          <BookCheck />
+          Complete Journal
         </Button>
       ) : (
         <Button onClick={onNext}>

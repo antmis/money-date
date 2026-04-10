@@ -28,7 +28,7 @@ export function Journal() {
     <PageContainer>
       <SectionHeader
         title="Journal"
-        description="How do I actually feel about money this quarter?"
+        description="Take a few moments to reflect on your past week, month, quarter, or year. Grab a journal, get comfortable, and follow the prompts to help guide your reflection."
       />
 
       {isSummary ? (

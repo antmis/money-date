@@ -1,4 +1,4 @@
-import { Button, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, XStack, YStack } from '@/ui'
+import { Tooltip, Button, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, XStack, YStack } from '@/ui'
 import type { LocationDialogsState } from '../hooks/useLocationDialogs'
 import type { LocationForm } from '../hooks/useLocationDialogs'
 
@@ -18,14 +18,17 @@ function LocationFormFields({ form, setField }: LocationFormFieldsProps) {
         <Label htmlFor="lf-address">Address</Label>
         <Input id="lf-address" placeholder="123 Main St, Denver, CO 80218" value={form.address} onChange={e => setField('address', e.target.value)} />
       </Field>
-      <Grid cols={2} className="gap-3">
+
+      <Grid cols={2}>
         <Field>
-          <Label htmlFor="lf-office-sqft">Office sq ft</Label>
-          <Input id="lf-office-sqft" type="number" min="0" step="1" placeholder="125" value={form.officeSqft} onChange={e => setField('officeSqft', e.target.value)} />
+          <Label htmlFor="lf-total-sqft">Total sq ft</Label>
+          <Tooltip description="To calculate your home office deduction, enter the total square footage of your home. We use this to calculate your reimbursement %." />
+          <Input id="lf-total-sqft" type="number" min="0" step="1" placeholder="850" value={form.totalSqft} onChange={e => setField('totalSqft', e.target.value)} />
         </Field>
         <Field>
-          <Label htmlFor="lf-total-sqft">Total sq ft of unit</Label>
-          <Input id="lf-total-sqft" type="number" min="0" step="1" placeholder="850" value={form.totalSqft} onChange={e => setField('totalSqft', e.target.value)} />
+          <Label htmlFor="lf-office-sqft">{form.name} sq ft</Label>
+          <Tooltip description="Enter the square footage of your dedicated home office. We use this to calculate your reimbursement %." />
+          <Input id="lf-office-sqft" type="number" min="0" step="1" placeholder="125" value={form.officeSqft} onChange={e => setField('officeSqft', e.target.value)} />
         </Field>
       </Grid>
     </YStack>

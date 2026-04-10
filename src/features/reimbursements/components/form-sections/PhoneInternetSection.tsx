@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pencil } from 'lucide-react'
-import { Button, Card, Dialog, Field, Input, Label, ListItem, Typography, XStack, YStack } from '@/ui'
+import { Button, Card, Dialog, Field, Input, Label, ListItem, XStack } from '@/ui'
 import type { PhoneInternetExpenses } from '../../types'
 import { calcPhoneInternetReimbursement } from '../../utils/calculations'
 import { ReimbursementField } from '../ReimbursementField'
@@ -18,26 +18,21 @@ export function PhoneInternetSection({ expenses, onChange }: PhoneInternetSectio
     <>
     <Card
       title="Phone & Internet"
+      description="Adjust the reimbursement rate for each bill based on the percentage of business use."
+      headerExtra={
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setDialogOpen(true)}
+        >
+          <Pencil /> Edit
+        </Button>
+      }
       footer={<ListItem title="Phone & Internet Total" lineItem={`$${total.toFixed(2)}`} />}
     >
-      <ListItem
-        title="Business Usage"
-        subTitle="Adjust the percentage of each bill that is for business use."
-        lineItem={
-          <XStack gap={1}>
-            <YStack className="items-end">
-              <Typography variant="small">Internet: {expenses.internetUsage}%</Typography>
-              <Typography variant="small">Phone: {expenses.phoneUsage}%</Typography>
-            </YStack>
-            <Button
-              variant="secondary"
-              size="icon-sm"
-              onClick={() => setDialogOpen(true)}
-            >
-              <Pencil />
-            </Button>
-          </XStack>
-        }
+      <ListItem 
+        title="Reimbursement Rates:" 
+        lineItem={`Internet: ${expenses.internetUsage}%, Phone: ${expenses.phoneUsage}%`}
       />
 
       <ReimbursementField
