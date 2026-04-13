@@ -3,6 +3,7 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import {
   Badge,
   Card,
+  ExportCSVButton,
   Table,
   TableBody,
   TableCell,
@@ -11,9 +12,21 @@ import {
   TableHeader,
   TableRow,
   Typography,
+  XStack,
 } from '@/ui'
+import type { CsvColumn } from '@/ui'
 import type { BusinessActivity } from '../types'
 import { formatDate } from '@/shared/utils/formatDate'
+
+const CSV_COLUMNS: CsvColumn<BusinessActivity>[] = [
+  { header: 'Date', accessor: e => e.date },
+  { header: 'Type', accessor: e => e.type === 'business_expense' ? 'Expense' : 'Income' },
+  { header: 'Customer / Vendor', accessor: e => e.customerVendorName },
+  { header: 'Account', accessor: e => e.account },
+  { header: 'Amount', accessor: e => e.amount },
+  { header: 'Reimbursed', accessor: e => e.reimbursementDate ? e.reimbursementDate : '' },
+  { header: 'Purpose', accessor: e => e.businessPurpose },
+]
 
 interface BusinessActivityTableProps {
   entries: BusinessActivity[]
@@ -35,6 +48,7 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
       {entries.length === 0 ? (
         <Typography variant="muted" className="py-4 text-center">No entries yet. Click "+ Add Entry" to get started.</Typography>
       ) : (
+        <>
         <Table>
           <TableHeader>
             <TableRow>
@@ -98,6 +112,10 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
           </TableRow>
         </TableFooter>
         </Table>
+        <XStack justify="end">
+          <ExportCSVButton data={entries} columns={CSV_COLUMNS} filename="business-activity" />
+        </XStack>
+        </>
       )}
     </Card>
   )

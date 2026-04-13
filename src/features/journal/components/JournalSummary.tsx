@@ -28,7 +28,7 @@ export function JournalSummary({ entry, onReset }: JournalSummaryProps) {
             variant="outline"
             options={{
               get angle() {
-                return Math.random() * 360
+                return Math.random() * 24 + 80
               },
             }}
           >

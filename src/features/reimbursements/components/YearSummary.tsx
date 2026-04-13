@@ -1,4 +1,5 @@
-import { Card, Badge, Select, Typography, Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell } from '@/ui'
+import { Card, Badge, Select, Typography, Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, ExportCSVButton, XStack } from '@/ui'
+import type { CsvColumn } from '@/ui'
 import type { MonthlyReimbursement } from '../types'
 import {
   calcOfficeReimbursement,
@@ -11,6 +12,26 @@ import {
 
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+interface MonthRow {
+  month: number
+  data: MonthlyReimbursement
+  officesTotal: number
+  milesTotal: number
+  phoneTotal: number
+  healthTotal: number
+  total: number
+}
+
+const CSV_COLUMNS: CsvColumn<MonthRow>[] = [
+  { header: 'Month', accessor: r => MONTH_NAMES[r.month - 1] },
+  { header: 'Office', accessor: r => r.officesTotal.toFixed(2) },
+  { header: 'Miles', accessor: r => r.milesTotal.toFixed(2) },
+  { header: 'Phone', accessor: r => r.phoneTotal.toFixed(2) },
+  { header: 'Health', accessor: r => r.healthTotal.toFixed(2) },
+  { header: 'Total', accessor: r => r.total.toFixed(2) },
+  { header: 'Status', accessor: r => r.data.paid ? 'Paid' : r.total > 0 ? 'Due' : '' },
+]
 
 const YEAR_OPTIONS = ['2025', '2026']
 
@@ -104,6 +125,9 @@ export function YearSummary({ year, currentMonth, yearData, onEdit, onYearChange
           </TableRow>
         </TableFooter>
       </Table>
+      <XStack justify="end">
+        <ExportCSVButton data={months} columns={CSV_COLUMNS} filename={`reimbursements-${year}`} />
+      </XStack>
     </Card>
   )
 }
