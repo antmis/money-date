@@ -1,4 +1,4 @@
-import { User2, Sun, Moon, Monitor, LogOut } from 'lucide-react'
+import { User2, UserRoundPen, Sun, Moon, Monitor, LogOut } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
@@ -30,7 +30,7 @@ export function UserMenu() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuItem disabled>{user?.email}</DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/profile')}>
-          <User2 />
+          <UserRoundPen />
           Profile
         </DropdownMenuItem>
         <DropdownMenuSeparator />
