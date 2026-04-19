@@ -12,6 +12,7 @@ import { Giving } from '@/pages/Giving'
 import { Journal } from '@/pages/Journal'
 import { Reimbursements } from '@/pages/Reimbursements'
 import { BusinessActivity } from '@/pages/BusinessActivity'
+import { Profile } from '@/pages/Profile'
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
                   <Route path="/reimbursements" element={<Reimbursements />} />
                   <Route path="/biz-activity" element={<BusinessActivity />} />
                   <Route path="/journal" element={<Journal />} />
+                  <Route path="/profile" element={<Profile />} />
                 </Route>
               </Routes>
             </WorkspaceProvider>

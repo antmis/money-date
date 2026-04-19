@@ -1,5 +1,6 @@
 import { User2, Sun, Moon, Monitor, LogOut } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
 import { Button } from '@/ui'
 import {
@@ -16,6 +17,7 @@ import {
 export function UserMenu() {
   const { user, signOut } = useAuth()
   const { theme, setTheme } = useTheme()
+  const navigate = useNavigate()
 
   return (
     <DropdownMenu>
@@ -27,6 +29,10 @@ export function UserMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuItem disabled>{user?.email}</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/profile')}>
+          <User2 />
+          Profile
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
