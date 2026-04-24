@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame } from 'lucide-react'
+import { BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame, UserRoundPen } from 'lucide-react'
 import { Typography, XStack } from '@/ui'
 import { cn } from '@/lib/utils'
 import { UserMenu } from '@/shared/components/UserMenu'
@@ -13,6 +13,7 @@ const navItems = [
   { to: '/reimbursements', label: 'Reimburse', icon: BadgeDollarSign },
   { to: '/biz-activity', label: 'Biz Activity', icon: Activity },
   { to: '/journal', label: 'Journal', icon: BookOpen },
+  { to: '/profile', label: 'Profile', icon: UserRoundPen },
 ]
 
 
