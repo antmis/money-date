@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import { Button, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack, Separator, Typography } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
-import { XERO_ACCOUNTS } from '../types'
+import { XERO_ACCOUNT_GROUPS } from '../types'
 import type { BusinessActivity, BusinessActivityType } from '../types'
 
 interface BusinessActivityDialogProps {
@@ -155,7 +155,7 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
               value={form.account}
               onValueChange={(v) => setField('account', v)}
               placeholder="Select account"
-              options={XERO_ACCOUNTS.map(a => ({ value: a, label: a }))}
+              options={XERO_ACCOUNT_GROUPS}
             />
           </Field>
           
