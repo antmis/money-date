@@ -75,7 +75,11 @@ export function Select({ value, onValueChange, options, placeholder = "Select...
   }
 
   return (
-    <Popover open={open} onOpenChange={(next) => { setOpen(next); if (!next) setSearchTerm(""); }}>
+    <Popover 
+      open={open} 
+      modal={true} 
+      onOpenChange={(next) => { setOpen(next); if (!next) setSearchTerm(""); }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
