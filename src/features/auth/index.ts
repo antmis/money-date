@@ -1,3 +1,5 @@
 export { AuthProvider, useAuth } from './AuthContext'
 export { LoginPage } from './LoginPage'
+export { ForgotPasswordPage } from './ForgotPasswordPage'
+export { ResetPasswordPage } from './ResetPasswordPage'
 export { RequireAuth } from './RequireAuth'

@@ -52,7 +52,6 @@ export function CashEditDialog({ open, onOpenChange, title, value, onSave }: Cas
           value={draft || ''}
           onChange={(e) => setDraft(Number(e.target.value) || 0)}
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-          autoFocus
         />
       </Field>
     </Dialog>

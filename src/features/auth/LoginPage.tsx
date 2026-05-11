@@ -98,6 +98,20 @@ export function LoginPage() {
                 />
               </Field>
 
+              {mode === "signin" && (
+                <XStack justify="end">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="p-0 h-auto"
+                    onClick={() => window.location.assign("/forgot-password")}
+                    type="button"
+                  >
+                    Forgot password?
+                  </Button>
+                </XStack>
+              )}
+
               {error && (
                 <Typography variant="small" className="text-destructive">
                   {error}

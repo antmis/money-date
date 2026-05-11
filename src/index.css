@@ -10,8 +10,8 @@
     --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
-    --primary: 162 44% 31%;
-    --primary-foreground: 163 25% 96%;
+    --primary: 143 86% 52%;
+    --primary-foreground: 150 40% 12%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 13%;
     --muted: 0 0% 96%;
@@ -35,8 +35,8 @@
     --radius-xl: calc(var(--radius) + 4px);
     --sidebar-background: 0 0% 97%;
     --sidebar-foreground: 0 0% 9%;
-    --sidebar-primary: 162 54% 37%;
-    --sidebar-primary-foreground: 163 25% 96%;
+    --sidebar-primary: 143 86% 52%;
+    --sidebar-primary-foreground: 150 40% 12%;
     --sidebar-accent: 0 0% 96%;
     --sidebar-accent-foreground: 0 0% 13%;
     --sidebar-border: 0 0% 90%;
@@ -50,8 +50,8 @@
     --card-foreground: 0 0% 97%;
     --popover: 0 0% 13%;
     --popover-foreground: 0 0% 97%;
-    --primary: 163 35% 25%;
-    --primary-foreground: 163 25% 96%;
+    --primary: 143 86% 52%;
+    --primary-foreground: 150 40% 12%;
     --secondary: 240 2% 17%;
     --secondary-foreground: 0 0% 97%;
     --muted: 0 0% 15%;
@@ -70,8 +70,8 @@
     --chart-5: 0 0% 15%;
     --sidebar-background: 0 0% 13%;
     --sidebar-foreground: 0 0% 97%;
-    --sidebar-primary: 162 56% 42%;
-    --sidebar-primary-foreground: 162 24% 16%;
+    --sidebar-primary: 150 100% 75%;
+    --sidebar-primary-foreground: 150 40% 12%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 97%;
     --sidebar-border: 0 0% 20%;

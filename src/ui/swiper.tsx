@@ -31,6 +31,7 @@ export const PageSwiper = forwardRef<PageSwiperHandle, PageSwiperProps>(
           style={{ width: '100%' }}
           onSwiper={(swiper) => { swiperRef.current = swiper }}
           onSlideChange={(swiper) => onSlideChange(swiper.activeIndex)}
+          spaceBetween={16}
         >
           {slides.map((slide, i) => (
             <SwiperSlide key={i} style={{ width: '100%', boxSizing: 'border-box' }}>

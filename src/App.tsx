@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from 'next-themes'
 import { Toaster, TooltipProvider } from '@/ui'
 import { AppLayout } from '@/shared/layout'
-import { AuthProvider, LoginPage, RequireAuth } from '@/features/auth'
+import { AuthProvider, LoginPage, ForgotPasswordPage, ResetPasswordPage, RequireAuth } from '@/features/auth'
 import { WorkspaceProvider, RequireWorkspace } from '@/features/workspace'
 import { Runway } from '@/pages/Runway'
 import { Quarter } from '@/pages/Quarter'
@@ -23,6 +23,8 @@ export default function App() {
             <WorkspaceProvider>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route element={
                   <RequireAuth>
                     <RequireWorkspace>

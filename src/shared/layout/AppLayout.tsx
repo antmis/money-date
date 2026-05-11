@@ -3,6 +3,7 @@ import { BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, A
 import { Typography, XStack } from '@/ui'
 import { cn } from '@/lib/utils'
 import { UserMenu } from '@/shared/components/UserMenu'
+import { Banner } from '@/ui/banner'
 
 const navItems = [
   { to: '/', label: 'Runway', icon: Flame },
@@ -20,6 +21,7 @@ const navItems = [
 export function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
+      <Banner />
       <header className="border-b bg-background sticky top-0 z-50">
         <XStack className="max-w-5xl mx-auto px-6 items-center justify-between h-14">
           <Typography variant="brand">money date</Typography>

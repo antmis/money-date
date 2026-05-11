@@ -21,12 +21,12 @@ export function JournalNav({
   return (
     <XStack justify="between" >
       <Button
-        variant="ghost"
+        variant="secondary"
+        size="icon"
         onClick={onBack}
         disabled={currentStep === 0}
       >
         <ChevronLeft />
-        Back
       </Button>
 
       {isLast ? (
