@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext"
 import { Button, Card, Input, Label, Typography, YStack, Field, Spinner } from "@/ui"
 
 export function ResetPasswordPage() {
-  const { user, updatePassword } = useAuth()
+  const { updatePassword } = useAuth()
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
