@@ -77,6 +77,7 @@ export function useJournal(year: number, quarter: Quarter) {
 
   function goNext() { setCurrentStep(s => Math.min(s + 1, PROMPTS.length)) }
   function goBack() { setCurrentStep(s => Math.max(s - 1, 0)) }
+  function goTo(index: number) { setCurrentStep(Math.max(0, Math.min(index, PROMPTS.length - 1))) }
 
   function complete() {
     const updated = { ...entry, completedAt: new Date().toISOString() }
@@ -104,5 +105,6 @@ export function useJournal(year: number, quarter: Quarter) {
     isComplete,
     prompts: PROMPTS,
     loading,
+    goTo,
   }
 }

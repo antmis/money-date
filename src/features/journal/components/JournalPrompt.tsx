@@ -9,6 +9,7 @@ interface JournalPromptProps {
 export function JournalPrompt({ promptNumber, title, helperText }: JournalPromptProps) {
   return (
     <Card
+      className="shadow-none"
       headerPre={<Typography variant="meta">Prompt {promptNumber}</Typography>}
       title={title}
       description={helperText}

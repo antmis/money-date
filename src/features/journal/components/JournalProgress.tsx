@@ -3,9 +3,10 @@ import { Typography, XStack } from '@/ui'
 interface JournalProgressProps {
   currentStep: number
   totalSteps: number
+  onStepClick?: (index: number) => void
 }
 
-export function JournalProgress({ currentStep, totalSteps }: JournalProgressProps) {
+export function JournalProgress({ currentStep, totalSteps, onStepClick }: JournalProgressProps) {
   if (currentStep >= totalSteps) return null
 
   return (
@@ -14,7 +15,10 @@ export function JournalProgress({ currentStep, totalSteps }: JournalProgressProp
         {Array.from({ length: totalSteps }).map((_, i) => (
           <XStack
             key={i}
+            onClick={() => onStepClick?.(i)}
             className={`h-1.5 w-6 rounded-full transition-colors ${
+              onStepClick ? 'cursor-pointer' : ''
+            } ${
               i < currentStep
                 ? 'bg-foreground'
                 : i === currentStep
