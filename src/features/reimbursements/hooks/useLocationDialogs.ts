@@ -17,6 +17,7 @@ interface UseLocationDialogsOptions {
   updateTemplate: (id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) => void
   updateOfficeMetadata: (index: number, changes: Partial<OfficeMonthlyData>) => void
   removeOfficeFromMonth: (index: number) => void
+  archiveTemplate: (id: string) => void
 }
 
 export function useLocationDialogs({
@@ -26,6 +27,7 @@ export function useLocationDialogs({
   updateTemplate,
   updateOfficeMetadata,
   removeOfficeFromMonth,
+  archiveTemplate,
 }: UseLocationDialogsOptions) {
   const [addOpen, setAddOpen] = useState(false)
   const [editIndex, setEditIndex] = useState<number | null>(null)
@@ -93,6 +95,7 @@ export function useLocationDialogs({
 
   function handleDelete() {
     if (deleteIndex === null) return
+    archiveTemplate(offices[deleteIndex].templateId)
     removeOfficeFromMonth(deleteIndex)
     closeDelete()
   }

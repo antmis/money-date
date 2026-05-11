@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MapPin, Pencil } from 'lucide-react'
 import { PageContainer } from '@/shared/layout'
 import { PageSkeleton, SectionHeader } from '@/shared/components'
-import { Card, Field, Grid, Input, Label, Button, XStack, Typography, Item, YStack} from '@/ui'
+import { Card, Field, Grid, Input, Label, Button, XStack, Typography, Item, YStack } from '@/ui'
 import { LocationDialogs } from '@/features/reimbursements/components/LocationDialogs'
 import { useOfficeTemplates } from '@/features/reimbursements/hooks/useOfficeTemplates'
 import { useAuth } from '@/features/auth'
@@ -12,7 +12,7 @@ import { useProfileLocationDialogs } from './hooks/useProfileLocationDialogs'
 export function ProfilePage() {
   const { user } = useAuth()
   const { profile, loading, saveProfile } = useProfile()
-  const { templates, addTemplate, updateTemplate, deleteTemplate, loading: locLoading } = useOfficeTemplates()
+  const { templates, archivedTemplates, addTemplate, updateTemplate, archiveTemplate, loading: locLoading } = useOfficeTemplates()
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -24,7 +24,7 @@ export function ProfilePage() {
     }
   }, [loading, profile.firstName, profile.lastName])
 
-  const locationDialogs = useProfileLocationDialogs({ templates, addTemplate, updateTemplate, deleteTemplate })
+  const locationDialogs = useProfileLocationDialogs({ templates, addTemplate, updateTemplate, archiveTemplate })
 
   const isDirty = firstName !== profile.firstName || lastName !== profile.lastName
 
@@ -101,9 +101,29 @@ export function ProfilePage() {
             ))}
           </YStack>
         )}
+
+        {archivedTemplates.length > 0 && (
+          <YStack gap={2} className="mt-2">
+            <Typography variant="muted" className="pt-2">
+              Archived
+            </Typography>
+            <YStack gap={2}>
+              {archivedTemplates.map(t => (
+                <Item
+                  key={t.id}
+                  variant="outline"
+                  icon={<MapPin />}
+                  title={t.name}
+                  description={t.address || undefined}
+                  className="opacity-50"
+                />
+              ))}
+            </YStack>
+          </YStack>
+        )}
       </Card>
 
-      <LocationDialogs {...locationDialogs} />
+      <LocationDialogs {...locationDialogs} archiveMode />
     </PageContainer>
   )
 }

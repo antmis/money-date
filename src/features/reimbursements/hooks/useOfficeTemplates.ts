@@ -6,8 +6,11 @@ import { toast } from 'sonner'
 
 export function useOfficeTemplates() {
   const { activeBusiness } = useWorkspace()
-  const [templates, setTemplates] = useState<OfficeTemplate[]>([])
+  const [allTemplates, setTemplates] = useState<OfficeTemplate[]>([])
   const [loading, setLoading] = useState(true)
+
+  const templates = allTemplates.filter(t => !t.archived)
+  const archivedTemplates = allTemplates.filter(t => t.archived)
 
   useEffect(() => {
     if (!activeBusiness) return
@@ -15,7 +18,7 @@ export function useOfficeTemplates() {
     setLoading(true)
     supabase
       .from('office_locations')
-      .select('id, name, address, office_sqft, total_sqft')
+      .select('id, name, address, office_sqft, total_sqft, archived')
       .eq('business_id', activeBusiness.id)
       .order('created_at', { ascending: true })
       .then(({ data, error }) => {
@@ -26,6 +29,7 @@ export function useOfficeTemplates() {
           address: r.address as string,
           officeSqft: Number(r.office_sqft),
           totalSqft: Number(r.total_sqft),
+          archived: Boolean(r.archived),
         })))
         setLoading(false)
       })
@@ -33,7 +37,7 @@ export function useOfficeTemplates() {
 
   async function addTemplate(data: Omit<OfficeTemplate, 'id'>): Promise<OfficeTemplate> {
     const id = crypto.randomUUID()
-    const template: OfficeTemplate = { ...data, id }
+    const template: OfficeTemplate = { ...data, id, archived: false }
     setTemplates(prev => [...prev, template])
     if (activeBusiness) {
       const { error } = await supabase.from('office_locations').insert({
@@ -61,14 +65,14 @@ export function useOfficeTemplates() {
     if (error) toast.error('Failed to update office location')
   }
 
-  async function deleteTemplate(id: string) {
-    setTemplates(prev => prev.filter(t => t.id !== id))
+  async function archiveTemplate(id: string) {
+    setTemplates(prev => prev.map(t => t.id === id ? { ...t, archived: true } : t))
     if (!activeBusiness) return
-    const { error } = await supabase.from('office_locations').delete().eq('id', id).eq('business_id', activeBusiness.id)
-    if (error) toast.error('Failed to delete office location')
+    const { error } = await supabase.from('office_locations').update({ archived: true }).eq('id', id).eq('business_id', activeBusiness.id)
+    if (error) { setTemplates(prev => prev.map(t => t.id === id ? { ...t, archived: false } : t)); toast.error('Failed to archive office location') }
   }
 
-  return { templates, addTemplate, updateTemplate, deleteTemplate, loading }
+  return { templates, archivedTemplates, addTemplate, updateTemplate, archiveTemplate, loading }
 }
 
 export function useHealthTemplate() {

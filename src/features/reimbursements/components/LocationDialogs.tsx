@@ -1,3 +1,4 @@
+import { Archive } from 'lucide-react'
 import { Tooltip, Button, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, XStack, YStack } from '@/ui'
 import type { LocationDialogsState } from '../hooks/useLocationDialogs'
 import type { LocationForm } from '../hooks/useLocationDialogs'
@@ -40,7 +41,8 @@ export function LocationDialogs({
   editIndex, closeEdit, handleEditSave, handleEditToDelete,
   deleteIndex, closeDelete, handleDelete,
   form, setField, formValid, offices,
-}: LocationDialogsState) {
+  archiveMode,
+}: LocationDialogsState & { archiveMode?: boolean }) {
   return (
     <>
       {/* Add Location */}
@@ -67,7 +69,9 @@ export function LocationDialogs({
         className="max-w-md"
         footer={
           <XStack justify="between" className="w-full">
-            <Button variant="destructive" onClick={handleEditToDelete}>Remove</Button>
+            <Button variant="destructive" onClick={handleEditToDelete}>
+              {archiveMode ? <><Archive />Archive</> : 'Remove'}
+            </Button>
             <XStack gap={2}>
               <Button variant="outline" onClick={closeEdit}>Cancel</Button>
               <Button onClick={handleEditSave} disabled={!formValid}>Save</Button>
@@ -83,7 +87,12 @@ export function LocationDialogs({
         open={deleteIndex !== null}
         onOpenChange={(open) => { if (!open) closeDelete() }}
         onConfirm={handleDelete}
-        description={`Remove "${deleteIndex !== null ? offices[deleteIndex]?.name : ''}" from this month? Past months are unaffected.`}
+        confirmLabel={archiveMode ? 'Archive' : 'Delete'}
+        description={
+          archiveMode
+            ? `Archive "${deleteIndex !== null ? offices[deleteIndex]?.name : ''}"? It will be hidden from active locations but preserved in your history.`
+            : `Remove "${deleteIndex !== null ? offices[deleteIndex]?.name : ''}" from this month? Past months are unaffected.`
+        }
       />
     </>
   )

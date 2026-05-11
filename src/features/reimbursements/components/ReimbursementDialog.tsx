@@ -116,7 +116,7 @@ export function ReimbursementDialog({
         </YStack>
       </Dialog>
 
-      <LocationDialogs {...location} />
+      <LocationDialogs {...location} archiveMode />
     </>
   )
 }

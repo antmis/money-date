@@ -8,7 +8,7 @@ interface Options {
   templates: OfficeTemplate[]
   addTemplate: (data: Omit<OfficeTemplate, 'id'>) => Promise<OfficeTemplate>
   updateTemplate: (id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) => void
-  deleteTemplate: (id: string) => void
+  archiveTemplate: (id: string) => void
 }
 
 // OfficeTemplate satisfies the fields LocationDialogs reads from offices (.name)
@@ -16,7 +16,7 @@ function asMonthly(templates: OfficeTemplate[]): OfficeMonthlyData[] {
   return templates as unknown as OfficeMonthlyData[]
 }
 
-export function useProfileLocationDialogs({ templates, addTemplate, updateTemplate, deleteTemplate }: Options) {
+export function useProfileLocationDialogs({ templates, addTemplate, updateTemplate, archiveTemplate }: Options) {
   const [addOpen, setAddOpen] = useState(false)
   const [editIndex, setEditIndex] = useState<number | null>(null)
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
@@ -71,7 +71,7 @@ export function useProfileLocationDialogs({ templates, addTemplate, updateTempla
 
   function handleDelete() {
     if (deleteIndex === null) return
-    deleteTemplate(templates[deleteIndex].id)
+    archiveTemplate(templates[deleteIndex].id)
     closeDelete()
   }
 

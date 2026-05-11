@@ -4,6 +4,7 @@ export interface OfficeTemplate {
   address: string
   officeSqft: number
   totalSqft: number
+  archived?: boolean
 }
 
 export interface OfficeMonthlyData {
