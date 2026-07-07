@@ -69,19 +69,19 @@ export function ProfilePage() {
         </XStack>
       </Card>
 
-      {/* Office Locations */}
+      {/* Home Offices */}
       <Card
-        title="Office locations"
-        description="Used to calculate your home office reimbursement percentage."
+        title="Home offices"
+        description="Used to calculate your home-office reimbursement percentage. Any dedicated work space in your home qualifies — it doesn't need to be a separate room or address."
         headerExtra={
           <Button onClick={locationDialogs.openAdd}>
-            Add Location
+            Add Home Office
           </Button>
         }
       >
         {templates.length === 0 ? (
           <Typography variant="muted" className="py-2 text-center">
-            No office locations yet. Click "Add Location" to get started.
+            No home offices yet. Click "Add Home Office" to get started.
           </Typography>
         ) : (
           <YStack gap={2}>
@@ -93,7 +93,7 @@ export function ProfilePage() {
                 title={t.name}
                 description={t.address || undefined}
                 action={
-                  <Button variant="outline" size="icon-sm" onClick={() => locationDialogs.openEdit(i)} aria-label="Edit location">
+                  <Button variant="outline" size="icon-sm" onClick={() => locationDialogs.openEdit(i)} aria-label="Edit home office">
                     <Pencil />
                   </Button>
                 }

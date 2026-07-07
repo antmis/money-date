@@ -6,7 +6,7 @@ const emptyForm = (): LocationForm => ({ name: '', address: '', officeSqft: '', 
 
 interface Options {
   templates: OfficeTemplate[]
-  addTemplate: (data: Omit<OfficeTemplate, 'id'>) => Promise<OfficeTemplate>
+  addTemplate: (data: Omit<OfficeTemplate, 'id' | 'createdAt'>) => Promise<OfficeTemplate>
   updateTemplate: (id: string, changes: Partial<Omit<OfficeTemplate, 'id'>>) => void
   archiveTemplate: (id: string) => void
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button, Dialog, XStack, YStack, Card } from '@/ui'
 import { Spinner } from '@/ui/spinner'
@@ -11,7 +10,7 @@ import { MileageSection } from './form-sections/MileageSection'
 import { PhoneInternetSection } from './form-sections/PhoneInternetSection'
 import { HealthInsuranceSection } from './form-sections/HealthInsuranceSection'
 import { ReimbursementSummary } from './ReimbursementSummary'
-import { LocationDialogs } from './LocationDialogs'
+import { LocationDialogs, HomeOfficePicker } from './LocationDialogs'
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -79,11 +78,8 @@ export function ReimbursementDialog({
           <MonthSelector year={year} month={month} onChange={switchMonth} />
 
           {data.offices.length === 0 && (
-            <Card title="No office locations added" description="Add your office location(s) to calculate reimbursements based on your workspace.">
-              <Button onClick={location.openAdd}>
-                <Plus />
-                Add Location
-              </Button>
+            <Card title="No home offices added" description="Add a home office to calculate reimbursements based on your workspace.">
+              <HomeOfficePicker location={location} placeholder="Add Home Office" className="w-auto" />
             </Card>
           )}
 
@@ -99,10 +95,7 @@ export function ReimbursementDialog({
 
           {data.offices.length !== 0 && (
             <XStack justify="start">
-              <Button variant="outline" size="sm" onClick={location.openAdd}>
-                <Plus />
-                Add Another Location
-              </Button>
+              <HomeOfficePicker location={location} placeholder="Add Another Home Office" className="w-auto" />
             </XStack>
           )}
 
@@ -116,7 +109,7 @@ export function ReimbursementDialog({
         </YStack>
       </Dialog>
 
-      <LocationDialogs {...location} archiveMode />
+      <LocationDialogs {...location} />
     </>
   )
 }

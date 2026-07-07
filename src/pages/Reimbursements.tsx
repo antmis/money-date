@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { PageContainer } from '@/shared/layout'
 import { SectionHeader } from '@/shared/components'
 import { PageSkeleton } from '@/shared/components'
@@ -20,26 +20,16 @@ export function Reimbursements() {
     updateHealthInsurance, markPaid, markUnpaid, save,
   } = useReimbursements()
 
-  const { templates, addTemplate, updateTemplate, archiveTemplate, loading: locLoading } = useOfficeTemplates()
-
-  // Auto-add any active templates not yet in this month's office list
-  useEffect(() => {
-    if (loading || locLoading) return
-    const existingIds = new Set(data.offices.map(o => o.templateId))
-    templates.forEach(t => {
-      if (!existingIds.has(t.id)) addOfficeToMonth(t)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, locLoading])
+  const { templates, addTemplate, updateTemplate } = useOfficeTemplates()
 
   const location = useLocationDialogs({
     offices: data.offices,
+    templates,
     addTemplate,
     addOfficeToMonth,
     updateTemplate,
     updateOfficeMetadata,
     removeOfficeFromMonth,
-    archiveTemplate,
   })
 
   if (loading) return <PageSkeleton />

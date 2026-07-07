@@ -18,11 +18,11 @@ export function useOfficeTemplates() {
     setLoading(true)
     supabase
       .from('office_locations')
-      .select('id, name, address, office_sqft, total_sqft, archived')
+      .select('id, name, address, office_sqft, total_sqft, archived, created_at')
       .eq('business_id', activeBusiness.id)
       .order('created_at', { ascending: true })
       .then(({ data, error }) => {
-        if (error) { toast.error('Failed to load office locations'); setLoading(false); return }
+        if (error) { toast.error('Failed to load home offices'); setLoading(false); return }
         setTemplates((data ?? []).map(r => ({
           id: r.id as string,
           name: r.name as string,
@@ -30,14 +30,15 @@ export function useOfficeTemplates() {
           officeSqft: Number(r.office_sqft),
           totalSqft: Number(r.total_sqft),
           archived: Boolean(r.archived),
+          createdAt: r.created_at as string,
         })))
         setLoading(false)
       })
   }, [activeBusiness?.id])
 
-  async function addTemplate(data: Omit<OfficeTemplate, 'id'>): Promise<OfficeTemplate> {
+  async function addTemplate(data: Omit<OfficeTemplate, 'id' | 'createdAt'>): Promise<OfficeTemplate> {
     const id = crypto.randomUUID()
-    const template: OfficeTemplate = { ...data, id, archived: false }
+    const template: OfficeTemplate = { ...data, id, archived: false, createdAt: new Date().toISOString() }
     setTemplates(prev => [...prev, template])
     if (activeBusiness) {
       const { error } = await supabase.from('office_locations').insert({
@@ -48,7 +49,7 @@ export function useOfficeTemplates() {
         office_sqft: data.officeSqft,
         total_sqft: data.totalSqft,
       })
-      if (error) { setTemplates(prev => prev.filter(t => t.id !== id)); toast.error('Failed to save office location') }
+      if (error) { setTemplates(prev => prev.filter(t => t.id !== id)); toast.error('Failed to save home office') }
     }
     return template
   }
@@ -62,14 +63,14 @@ export function useOfficeTemplates() {
       ...(changes.officeSqft !== undefined && { office_sqft: changes.officeSqft }),
       ...(changes.totalSqft !== undefined && { total_sqft: changes.totalSqft }),
     }).eq('id', id).eq('business_id', activeBusiness.id)
-    if (error) toast.error('Failed to update office location')
+    if (error) toast.error('Failed to update home office')
   }
 
   async function archiveTemplate(id: string) {
     setTemplates(prev => prev.map(t => t.id === id ? { ...t, archived: true } : t))
     if (!activeBusiness) return
     const { error } = await supabase.from('office_locations').update({ archived: true }).eq('id', id).eq('business_id', activeBusiness.id)
-    if (error) { setTemplates(prev => prev.map(t => t.id === id ? { ...t, archived: false } : t)); toast.error('Failed to archive office location') }
+    if (error) { setTemplates(prev => prev.map(t => t.id === id ? { ...t, archived: false } : t)); toast.error('Failed to archive home office') }
   }
 
   return { templates, archivedTemplates, addTemplate, updateTemplate, archiveTemplate, loading }
