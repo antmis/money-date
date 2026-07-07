@@ -6,13 +6,13 @@ import { UserMenu } from '@/shared/components/UserMenu'
 import { Banner } from '@/ui/banner'
 
 const navItems = [
+  { to: '/reimbursements', label: 'Reimburse', icon: BadgeDollarSign },
+  { to: '/biz-activity', label: 'Biz Activity', icon: Activity },
   { to: '/', label: 'Runway', icon: Flame },
   { to: '/quarter', label: 'Quarter', icon: Calendar },
   { to: '/allocate', label: 'Allocate', icon: HandCoins },
   { to: '/goals', label: 'Goals', icon: Goal },
   { to: '/giving', label: 'Giving', icon: HeartHandshake },
-  { to: '/reimbursements', label: 'Reimburse', icon: BadgeDollarSign },
-  { to: '/biz-activity', label: 'Biz Activity', icon: Activity },
   { to: '/journal', label: 'Journal', icon: BookOpen },
   { to: '/profile', label: 'Profile', icon: UserRoundPen },
 ]

@@ -10,15 +10,22 @@ import type { BusinessActivity } from '@/features/business-activity/types'
 export function BusinessActivity() {
   const [addOpen, setAddOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<BusinessActivity | null>(null)
+  const [duplicateSeed, setDuplicateSeed] = useState<Omit<BusinessActivity, 'id'> | null>(null)
   const { entries, addEntry, updateEntry, deleteEntry, loading } = useBusinessActivity()
   if (loading) return <PageSkeleton />
+
+  function handleDuplicate(data: Omit<BusinessActivity, 'id'>) {
+    setEditingEntry(null)
+    setDuplicateSeed(data)
+    setAddOpen(true)
+  }
 
   return (
     <PageContainer>
       <SectionHeader
         title="Biz Activity"
         description="Business transactions recorded through personal accounts — expenses and income to reconcile with Xero."
-        buttonAction={() => setAddOpen(true)}
+        buttonAction={() => { setDuplicateSeed(null); setAddOpen(true) }}
         buttonText="Add Entry"
       />
 
@@ -27,8 +34,9 @@ export function BusinessActivity() {
       {/* Add dialog */}
       <BusinessActivityDialog
         open={addOpen}
-        onOpenChange={setAddOpen}
+        onOpenChange={(open) => { setAddOpen(open); if (!open) setDuplicateSeed(null) }}
         onAdd={addEntry}
+        initialData={duplicateSeed ?? undefined}
       />
 
       {/* Edit dialog */}
@@ -38,6 +46,7 @@ export function BusinessActivity() {
         onAdd={addEntry}
         onUpdate={updateEntry}
         onDelete={deleteEntry}
+        onDuplicate={handleDuplicate}
         entry={editingEntry ?? undefined}
       />
     </PageContainer>

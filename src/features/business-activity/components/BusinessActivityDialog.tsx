@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, Copy } from 'lucide-react'
 import { Button, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack, Separator, Typography } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
 import { XERO_ACCOUNT_GROUPS } from '../types'
 import type { BusinessActivity, BusinessActivityType } from '../types'
+import { getDuplicateDate } from '../utils/getDuplicateDate'
 
 interface BusinessActivityDialogProps {
   open: boolean
@@ -11,7 +12,9 @@ interface BusinessActivityDialogProps {
   onAdd: (data: Omit<BusinessActivity, 'id'>) => void
   onUpdate?: (id: string, data: Omit<BusinessActivity, 'id'>) => void
   onDelete?: (id: string) => void
+  onDuplicate?: (data: Omit<BusinessActivity, 'id'>) => void
   entry?: BusinessActivity // present = edit mode
+  initialData?: Omit<BusinessActivity, 'id'> // prefill for add mode, e.g. from duplicate
 }
 
 function todayISO(): string {
@@ -26,16 +29,16 @@ function formatDate(iso: string): string {
   })
 }
 
-function entryToForm(e: BusinessActivity) {
+function dataToForm(d: Omit<BusinessActivity, 'id'>) {
   return {
-    date: e.date,
-    type: e.type,
-    customerVendorName: e.customerVendorName,
-    account: e.account,
-    amount: String(e.amount),
-    reimbursementDate: e.reimbursementDate,
-    paymentMethod: e.paymentMethod,
-    businessPurpose: e.businessPurpose,
+    date: d.date,
+    type: d.type,
+    customerVendorName: d.customerVendorName,
+    account: d.account,
+    amount: String(d.amount),
+    reimbursementDate: d.reimbursementDate,
+    paymentMethod: d.paymentMethod,
+    businessPurpose: d.businessPurpose,
   }
 }
 
@@ -50,8 +53,8 @@ const emptyForm = () => ({
   businessPurpose: '',
 })
 
-export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, onDelete, entry }: BusinessActivityDialogProps) {
-  const [form, setForm] = useState(entry ? entryToForm(entry) : emptyForm)
+export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, onDelete, onDuplicate, entry, initialData }: BusinessActivityDialogProps) {
+  const [form, setForm] = useState(entry ? dataToForm(entry) : initialData ? dataToForm(initialData) : emptyForm)
   const [dateCal, setDateCal] = useState(false)
   const [reimbCal, setReimbCal] = useState(false)
 
@@ -60,9 +63,9 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
 
   useEffect(() => {
     if (open) {
-      setForm(entry ? entryToForm(entry) : emptyForm())
+      setForm(entry ? dataToForm(entry) : initialData ? dataToForm(initialData) : emptyForm())
     }
-  }, [open, entry?.id])
+  }, [open, entry?.id, initialData])
 
   function setField<K extends keyof ReturnType<typeof emptyForm>>(
     key: K,
@@ -93,6 +96,20 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
     onOpenChange(false)
   }
 
+  function handleDuplicate() {
+    if (!entry || !onDuplicate) return
+    onDuplicate({
+      date: getDuplicateDate(entry.date),
+      type: entry.type,
+      customerVendorName: entry.customerVendorName,
+      account: entry.account,
+      amount: entry.amount,
+      reimbursementDate: '',
+      paymentMethod: entry.paymentMethod,
+      businessPurpose: entry.businessPurpose,
+    })
+  }
+
   function handleOpenChange(nextOpen: boolean) {
     onOpenChange(nextOpen)
   }
@@ -114,7 +131,15 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
       footer={
         <div className={`flex gap-2 ${isEdit ? 'justify-between w-full' : 'justify-end'}`}>
           {isEdit && (
-            <Button variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</Button>
+            <XStack gap={2}>
+              <Button variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</Button>
+              {onDuplicate && (
+                <Button variant="outline" onClick={handleDuplicate}>
+                  <Copy />
+                  Duplicate
+                </Button>
+              )}
+            </XStack>
           )}
           <XStack gap={2}>
             <Button variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>

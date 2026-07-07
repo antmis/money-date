@@ -161,7 +161,9 @@ export function useReimbursements() {
       totalSqft: template.totalSqft,
       alarm: 0, cleaning: 0, rent: 0, rentInsurance: 0, utilities: 0,
     }
-    setData(prev => ({ ...prev, offices: [...prev.offices, newOffice] }))
+    const updated = { ...data, offices: [...data.offices, newOffice] }
+    setData(updated)
+    void persist(updated)
   }
 
   function updateOffice(index: number, field: keyof OfficeMonthlyData, value: number | string) {
@@ -179,10 +181,9 @@ export function useReimbursements() {
   }
 
   function removeOfficeFromMonth(index: number) {
-    setData(prev => {
-      const offices = prev.offices.filter((_, i) => i !== index)
-      return { ...prev, offices }
-    })
+    const updated = { ...data, offices: data.offices.filter((_, i) => i !== index) }
+    setData(updated)
+    void persist(updated)
   }
 
   function updateMiles(miles: number) {
