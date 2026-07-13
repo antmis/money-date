@@ -60,6 +60,7 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
                   Date <ChevronsUpDown size={14} />
                 </button>
               </TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Customer / Vendor</TableHead>
               <TableHead>Account</TableHead>
@@ -72,6 +73,9 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
             {sorted.map(entry => (
               <TableRow key={entry.id} className="cursor-pointer" onClick={() => onEdit(entry)}>
                 <TableCell className="whitespace-nowrap">{formatDate(entry.date)}</TableCell>
+                <TableCell>
+                  {!entry.confirmed && <Badge variant="outline">Pending</Badge>}
+                </TableCell>
                 <TableCell>
                   <Badge variant={entry.type === 'business_expense' ? 'default' : 'secondary'}>
                     {entry.type === 'business_expense' ? 'Expense' : 'Income'}
@@ -106,14 +110,14 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
           <TableFooter>
           <TableRow>
             <TableCell className="pr-4 font-semibold">Total</TableCell>
-            <TableCell colSpan={3} />
+            <TableCell colSpan={4} />
             <TableCell className="text-right tabular-nums font-semibold">${totalAmount.toFixed(2)}</TableCell>
             <TableCell />
           </TableRow>
         </TableFooter>
         </Table>
         <XStack justify="end">
-          <ExportCSVButton data={entries} columns={CSV_COLUMNS} filename="business-activity" />
+          <ExportCSVButton data={entries.filter(e => e.confirmed)} columns={CSV_COLUMNS} filename="business-activity" />
         </XStack>
         </>
       )}

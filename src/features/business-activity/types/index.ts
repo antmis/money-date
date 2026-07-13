@@ -78,6 +78,8 @@ export const XERO_ACCOUNT_GROUPS = [
   }
 ] as const
 
+export type RepeatFrequency = 'none' | 'monthly' | 'annually'
+
 export interface BusinessActivity {
   id: string
   date: string
@@ -88,4 +90,7 @@ export interface BusinessActivity {
   reimbursementDate: string
   paymentMethod: string
   businessPurpose: string
+  repeatFrequency: RepeatFrequency
+  seriesId: string | null
+  confirmed: boolean
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { CalendarIcon, Copy } from 'lucide-react'
-import { Button, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack, Separator, Typography } from '@/ui'
+import { CalendarIcon, Check, ChevronDown, Copy } from 'lucide-react'
+import { Button, ButtonGroup, Calendar, ConfirmDeleteDialog, Dialog, Field, Grid, Input, Label, Select, Textarea, XStack, YStack, Separator, Typography } from '@/ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/ui/popover'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/ui/primitives/dropdown-menu'
 import { XERO_ACCOUNT_GROUPS } from '../types'
-import type { BusinessActivity, BusinessActivityType } from '../types'
+import type { BusinessActivity, BusinessActivityType, RepeatFrequency } from '../types'
 import { getDuplicateDate } from '../utils/getDuplicateDate'
 
 interface BusinessActivityDialogProps {
@@ -13,6 +14,9 @@ interface BusinessActivityDialogProps {
   onUpdate?: (id: string, data: Omit<BusinessActivity, 'id'>) => void
   onDelete?: (id: string) => void
   onDuplicate?: (data: Omit<BusinessActivity, 'id'>) => void
+  onStopRepeating?: () => void
+  onConfirm?: (id: string) => void
+  seriesActive?: boolean
   entry?: BusinessActivity // present = edit mode
   initialData?: Omit<BusinessActivity, 'id'> // prefill for add mode, e.g. from duplicate
 }
@@ -39,6 +43,7 @@ function dataToForm(d: Omit<BusinessActivity, 'id'>) {
     reimbursementDate: d.reimbursementDate,
     paymentMethod: d.paymentMethod,
     businessPurpose: d.businessPurpose,
+    repeatFrequency: d.repeatFrequency,
   }
 }
 
@@ -51,9 +56,10 @@ const emptyForm = () => ({
   reimbursementDate: '',
   paymentMethod: '',
   businessPurpose: '',
+  repeatFrequency: 'none' as RepeatFrequency,
 })
 
-export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, onDelete, onDuplicate, entry, initialData }: BusinessActivityDialogProps) {
+export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, onDelete, onDuplicate, onStopRepeating, onConfirm, seriesActive, entry, initialData }: BusinessActivityDialogProps) {
   const [form, setForm] = useState(entry ? dataToForm(entry) : initialData ? dataToForm(initialData) : emptyForm)
   const [dateCal, setDateCal] = useState(false)
   const [reimbCal, setReimbCal] = useState(false)
@@ -84,6 +90,9 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
       reimbursementDate: form.reimbursementDate,
       paymentMethod: form.paymentMethod.trim(),
       businessPurpose: form.businessPurpose.trim(),
+      repeatFrequency: form.repeatFrequency,
+      seriesId: entry ? entry.seriesId : null,
+      confirmed: entry ? entry.confirmed : true,
     }
   }
 
@@ -107,7 +116,21 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
       reimbursementDate: '',
       paymentMethod: entry.paymentMethod,
       businessPurpose: entry.businessPurpose,
+      repeatFrequency: entry.repeatFrequency,
+      seriesId: null,
+      confirmed: true,
     })
+  }
+
+  function handleStopRepeating() {
+    onStopRepeating?.()
+    onOpenChange(false)
+  }
+
+  function handleConfirm() {
+    if (!entry || !onConfirm) return
+    onConfirm(entry.id)
+    onOpenChange(false)
   }
 
   function handleOpenChange(nextOpen: boolean) {
@@ -121,6 +144,12 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
     form.amount &&
     parseFloat(form.amount) > 0
 
+  const isPending = entry?.confirmed === false
+  const showStopRepeating = !!(onStopRepeating && entry?.seriesId && seriesActive)
+  const primaryAction = isPending
+    ? { label: 'Confirm', icon: Check, onClick: handleConfirm }
+    : { label: 'Duplicate', icon: Copy, onClick: handleDuplicate }
+
   return (
     <>
     <Dialog
@@ -131,19 +160,38 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
       footer={
         <div className={`flex gap-2 ${isEdit ? 'justify-between w-full' : 'justify-end'}`}>
           {isEdit && (
-            <XStack gap={2}>
-              <Button variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</Button>
-              {onDuplicate && (
-                <Button variant="outline" onClick={handleDuplicate}>
-                  <Copy />
-                  Duplicate
-                </Button>
-              )}
-            </XStack>
+            <ButtonGroup>
+              <Button variant="outline" onClick={primaryAction.onClick}>
+                <primaryAction.icon />
+                {primaryAction.label}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" aria-label="More actions">
+                    <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {isPending && onDuplicate && (
+                    <DropdownMenuItem onClick={handleDuplicate}>
+                      <Copy />
+                      Duplicate
+                    </DropdownMenuItem>
+                  )}
+                  {showStopRepeating && (
+                    <DropdownMenuItem onClick={handleStopRepeating}>Stop Repeating</DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </ButtonGroup>
           )}
           <XStack gap={2}>
             <Button variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>
-            <Button onClick={handleSubmit} disabled={!isValid}>{isEdit ? 'Save' : 'Add Entry'}</Button>
+            <Button onClick={handleSubmit} disabled={!isValid}>
+              {isEdit ? 'Save' : 'Add Entry'}
+            </Button>
           </XStack>
         </div>
       }
@@ -221,6 +269,20 @@ export function BusinessActivityDialog({ open, onOpenChange, onAdd, onUpdate, on
               prefix="$"
               value={form.amount}
               onChange={e => setField('amount', e.target.value)}
+            />
+          </Field>
+
+          {/* Repeat */}
+          <Field>
+            <Label>Repeat</Label>
+            <Select
+              value={form.repeatFrequency}
+              onValueChange={(v) => setField('repeatFrequency', v as RepeatFrequency)}
+              options={[
+                { value: 'none', label: 'Does not repeat' },
+                { value: 'monthly', label: 'Monthly' },
+                { value: 'annually', label: 'Annually' },
+              ]}
             />
           </Field>
         </Grid>
