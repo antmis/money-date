@@ -3,7 +3,7 @@ import type { BusinessActivity } from '../types'
 import { supabase } from '@/lib/supabase'
 import { useWorkspace } from '@/features/workspace'
 import { toast } from 'sonner'
-import { computeNextOccurrenceDate, findLatestInSeries, todayISO } from '../utils/recurrence'
+import { computeNextOccurrenceDate, findLatestInSeries, getSeriesAnchorDay, todayISO } from '../utils/recurrence'
 
 function rowToEntry(row: Record<string, unknown>): BusinessActivity {
   return {
@@ -34,10 +34,11 @@ async function ensureDueOccurrences(loadedEntries: BusinessActivity[], businessI
   const newRows: Record<string, unknown>[] = []
 
   for (const seriesId of seriesIds) {
+    const anchorDay = getSeriesAnchorDay(loadedEntries, seriesId)
     let cursor = findLatestInSeries(loadedEntries, seriesId)
     let iterations = 0
     while (cursor && cursor.repeatFrequency !== 'none' && iterations < 60) {
-      const nextDate = computeNextOccurrenceDate(cursor.date, cursor.repeatFrequency)
+      const nextDate = computeNextOccurrenceDate(cursor.date, cursor.repeatFrequency, anchorDay)
       if (nextDate > today) break
       newRows.push({
         id: crypto.randomUUID(),
