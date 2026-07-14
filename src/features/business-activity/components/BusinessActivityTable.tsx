@@ -60,7 +60,7 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
                   Date <ChevronsUpDown size={14} />
                 </button>
               </TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Recurring</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Customer / Vendor</TableHead>
               <TableHead>Account</TableHead>
@@ -74,7 +74,9 @@ export function BusinessActivityTable({ entries, onEdit }: BusinessActivityTable
               <TableRow key={entry.id} className="cursor-pointer" onClick={() => onEdit(entry)}>
                 <TableCell className="whitespace-nowrap">{formatDate(entry.date)}</TableCell>
                 <TableCell>
-                  {!entry.confirmed && <Badge variant="outline">Pending</Badge>}
+                  {entry.repeatFrequency !== 'none' && (
+                    <Badge variant="outline">{entry.confirmed ? 'Recurring' : 'Pending'}</Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Badge variant={entry.type === 'business_expense' ? 'default' : 'secondary'}>
