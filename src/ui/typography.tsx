@@ -15,7 +15,7 @@ const variants = {
   amountLg:   'text-xl font-bold tabular-nums',
   value:      'text-2xl font-semibold',
   display:    'text-4xl font-bold',
-  brand:      'text-sm font-semibold tracking-tight',
+  brand:      'text-sm font-medium tracking-tight',
 } as const
 
 const colors = {

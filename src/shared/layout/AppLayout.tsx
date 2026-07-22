@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame, UserRoundPen } from 'lucide-react'
+import { BookOpen, BadgeDollarSign, Calendar, HandCoins, Goal, HeartHandshake, Activity, Flame, UserRoundPen, PiggyBank } from 'lucide-react'
 import { Typography, XStack } from '@/ui'
 import { cn } from '@/lib/utils'
 import { UserMenu } from '@/shared/components/UserMenu'
@@ -24,7 +24,10 @@ export function AppLayout() {
       <Banner />
       <header className="border-b bg-background sticky top-0 z-50">
         <XStack className="max-w-5xl mx-auto px-6 items-center justify-between h-14">
-          <Typography variant="brand">money date</Typography>
+          <XStack gap={1.5} align="center">
+            <PiggyBank size={18} />
+            <Typography variant="brand">Money Date</Typography>
+          </XStack>
           <UserMenu />
         </XStack>
         <nav className="max-w-5xl mx-auto px-6 overflow-x-auto">
