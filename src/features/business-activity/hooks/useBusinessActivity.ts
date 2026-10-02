@@ -144,9 +144,34 @@ export function useBusinessActivity() {
 
   async function deleteEntry(id: string) {
     if (!activeBusiness) return
-    setEntries(prev => prev.filter(e => e.id !== id))
-    const { error } = await supabase.from('business_activity').delete().eq('id', id).eq('business_id', activeBusiness.id)
-    if (error) toast.error('Failed to delete activity')
+    const target = entries.find(e => e.id === id)
+    const previous = entries
+    // If the latest occurrence of a series is deleted, the previous one becomes
+    // the series tip and ensureDueOccurrences would regenerate the deleted row on
+    // next load. End the series on the new tip so the delete sticks.
+    let newTip: BusinessActivity | null = null
+    if (target?.seriesId && findLatestInSeries(entries, target.seriesId)?.id === id) {
+      const rest = entries.filter(e => e.seriesId === target.seriesId && e.id !== id)
+      newTip = findLatestInSeries(rest, target.seriesId)
+      if (newTip?.repeatFrequency === 'none') newTip = null
+    }
+    setEntries(prev => prev
+      .filter(e => e.id !== id)
+      .map(e => (newTip && e.id === newTip.id ? { ...e, repeatFrequency: 'none' as const } : e)))
+    const { data, error } = await supabase.from('business_activity')
+      .delete().eq('id', id).eq('business_id', activeBusiness.id).select('id')
+    if (error || !data || data.length === 0) {
+      setEntries(previous)
+      toast.error('Failed to delete activity')
+      return
+    }
+    if (newTip) {
+      const { error: stopError } = await supabase.from('business_activity')
+        .update({ repeat_frequency: 'none' })
+        .eq('id', newTip.id)
+        .eq('business_id', activeBusiness.id)
+      if (stopError) toast.error('Deleted, but failed to stop the recurring series')
+    }
   }
 
   async function confirmEntry(id: string) {
